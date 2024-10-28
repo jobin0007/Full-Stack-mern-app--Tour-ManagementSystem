@@ -1,10 +1,9 @@
 const mongoose = require('mongoose')
-const userScehma =new mongoose.Schema({
+const tourOpratorScehma =new mongoose.Schema({
 name:{
     type:String,
     require:true,
-    trim:true,
-    minlength:3
+    trim:true
 },
 email:{
     type:String,
@@ -12,23 +11,20 @@ email:{
     trim:true,
     unique:true
 },
-password:{
-    type:String,
+mobile_number:{
+    type:Number,
     require:true,
-    minlength:6
+    unique:true
 },
 address:{
     type:String,
     require:true
 },
-mobile_number:{
+commission_rate:{
     type:Number,
-    require:true,
-    unique:true
+    require:true
 }
 },{timestamps:true})
 
-const User = mongoose.model('User',userScehma)
-module.exports = User
-
-    
+const TourOperator = mongoose.model('TourOperator',tourOpratorScehma)
+module.exports = TourOperator

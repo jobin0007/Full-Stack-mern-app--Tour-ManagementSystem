@@ -74,6 +74,27 @@ const userControllers = {
         })
 
 
+    }),
+    updateMobileNumber:asynHandler(async(req,res)=>{
+        const id = req.user
+        const{mobile_number} = req.body
+        if(!mobile_number){
+            throw new Error("please fill the field")
+        }
+        const user = await User.findOne({email})
+        if(!user){
+            throw new Error("User not found")
+        }
+        const updatedNumber = await User.findByIdAndUpdate(id,{email},{new:true})
+        if(!updatedNumber){
+            throw new Error("Mobile Number not updated")
+
+        }
+        res.json({
+            message:"Updated Successfully",
+            updatedNumber
+        })
+
     })
 }
 module.exports = userControllers
