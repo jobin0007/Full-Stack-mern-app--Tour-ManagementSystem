@@ -1,5 +1,11 @@
 const mongoose = require('mongoose')
 const tourOpratorScehma =new mongoose.Schema({
+    role:{
+        type:String,
+        require:true,
+        Enumerator:'tour-operator'
+          
+    },
 name:{
     type:String,
     require:true,

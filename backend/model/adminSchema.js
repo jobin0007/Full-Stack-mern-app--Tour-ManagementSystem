@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const adminScehma =new mongoose.Schema({
 
+
 name:{
     type:String,
     require:true,
@@ -16,11 +17,19 @@ email:{
 password:{
     type:String,
     require:true,
-    minlength:6
+
+},
+mobile_number:{
+    type:Number,
+    require:true
+},
+role:{
+    type:String,
+    default:'admin'
 }
 
 
 },{timestamps:true})
 
-const Admin = mongoose.model('User',adminScehma)
+const Admin = mongoose.model('Admin',adminScehma)
 module.exports = Admin

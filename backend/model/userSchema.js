@@ -1,5 +1,11 @@
 const mongoose = require('mongoose')
 const userScehma =new mongoose.Schema({
+    role:{
+        type:String,
+        require:true,
+        enum:['user','tour-operator'],
+        default:"user" 
+    },
 name:{
     type:String,
     require:true,
@@ -28,7 +34,7 @@ mobile_number:{
 }
 },{timestamps:true})
 
-const User = mongoose.model('User',userScehma)
-module.exports = User
+const Users = mongoose.model('Users',userScehma)
+module.exports = Users
 
     
