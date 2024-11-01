@@ -1,6 +1,8 @@
 
 const jwt = require('jsonwebtoken')
 const authentication = (req,res,next)=>{
+
+
   const cookies = req.cookies.token
 
 if(!cookies){
@@ -8,21 +10,31 @@ if(!cookies){
 }
 const jwtdecode =jwt.decode(cookies)
 
-if(!jwtdecode.role =='user'){
-    throw new Error("Authentication Failed")
+if(jwtdecode.role =='user'){
+    req.user= jwtdecode.userId
+    console.log("user",jwtdecode.userId);
+    
+  
 }
-req.user= jwtdecode.userId
-if(!jwtdecode.role == 'tour-operator'){
-  throw new Error("Authentication Failed")
-}
-req.admin= jwtdecode.adminId
+else if(jwtdecode.role == 'admin'){
+  req.admin= jwtdecode.adminId
+  console.log("admin",jwtdecode.adminId);
 
-if(!jwtdecode.role == 'tour-operator'){
-  throw new Error("Authentication Failed")
 }
-req.tourOperator= jwtdecode.tourOperatorId
+
+else if(!jwtdecode.role == 'tour-operator'){
+  req.tourOperator= jwtdecode.tourOperatorId
+  console.log("tourOperator",jwtdecode.tourOperatorId);
+ 
+}
+else{
+  throw new Error("Authentication Failed")
+  
+}
 
 next()
+
+
 
 }
 module.exports = authentication

@@ -22,7 +22,9 @@ const tourScehma = new mongoose.Schema({
         require: true,
         trim: true
 
-    }
+    },
+    availableSpots: { type: Number, 
+        required: true },
 
 }, { timestamps: true })
 

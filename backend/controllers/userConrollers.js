@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const Users = require('../model/userSchema')
 const Admin = require('../model/adminSchema')
 const TourOperator = require('../model/tourOperatorsSchema')
+const RoleChangeRequest = require('../model/roleChangeRequestingSchema')
 
 require('dotenv').config()
 
@@ -66,7 +67,7 @@ const userControllers = {
             throw new Error("Data is Incompleted, please fill all the fields ")
         }
         const user = await Users.findOne({email})
-        if(!user){
+        if(!user ||!user.role =='user'){
             throw new Error("user not found")
         }
     
@@ -74,14 +75,16 @@ const userControllers = {
         if(!userPassword){
             throw new Error("Password Is Incorrect")
         }
-        const token = jwt.sign({userId:user._id,role:user.role},process.env.PRIVATE_KEY,{expiresIn:'4hr'})
-        console.log("tokenDetails:",token);
+        const token = jwt.sign({userId:user.id,role:user.role},process.env.PRIVATE_KEY,{expiresIn:'4hr'})
+        // console.log("tokenDetails:",token);
         res.cookie('token',token,{
             maxAge: 2 * 24 * 60 * 60 * 1000,
             httpOnly: true,
             secure: false,
             sameSite: "none"
         })
+     
+      
         res.json({
             message:"Login Successfull",
             user
@@ -107,9 +110,13 @@ const userControllers = {
     })
     ,
     updateMobileNumber:asynHandler(async(req,res)=>{
-        const id = req.user
+        const {id}= req.user
         const{mobile_number} = req.body
         const {email}= req.body
+         if(!id){
+            throw new Error("User Not Found")
+         }
+       
         if(!mobile_number){
             throw new Error("please fill the field")
         }
@@ -127,6 +134,40 @@ const userControllers = {
             updateduser
         })
 
-    })
+    }),
+    deleteUser:asynHandler(async(req,res)=>{
+        const {id}= req.user
+        const {email}= req.body
+        if(!id){
+            throw new Error("User Not Found")
+        }
+        const userFound= await Users.findByIdAndDelete(id,{email},{new:true})
+        if(!userFound){
+            throw new Error("User Not Deleted ")
+
+        }
+        res.send("deleted successfully")
+
+    }),
+    requestTourOPerator:asynHandler(async(req,res)=>{
+  
+        const userId = req.user;
+    const existingRequest = await RoleChangeRequest.findOne({userId},{status: 'pending' });
+
+    if (existingRequest) {
+      return res.status(400).json({ message: 'A pending request already exists.' });
+    }
+
+    const newRequest = new RoleChangeRequest({
+        userId,
+        status: 'pending', // Set the initial status as 'new_request'
+    });
+
+    await newRequest.save();
+    
+    res.json({ message: "Role change request submitted successfully.", request: newRequest });
+ 
+
+})
 }
 module.exports = userControllers

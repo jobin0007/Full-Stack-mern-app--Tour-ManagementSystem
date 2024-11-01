@@ -1,20 +1,15 @@
 const mongoose = require('mongoose')
 const cutomizedToursScehma =new mongoose.Schema({
-request_date:{
-    type:Date,
-    require:true,
-    trim:true,
-},
-customized_tours_details:{
-    type:Object,
-    require:true,
-    trim:true,
-},
-mobile_number:{
-    type:Number,
-    require:true,
-    unique:true
-}
+    name: { type: String,
+         required: true },
+    description: { type: String, 
+        required: true },
+    date: { type: Date,
+         required: true },
+    price: { type: Number,
+         required: true },
+    participants: { type: Number,
+         required: true },
 },{timestamps:true})
 
 const CustomizedTours = mongoose.model('CustomizedTours',cutomizedToursScehma)
