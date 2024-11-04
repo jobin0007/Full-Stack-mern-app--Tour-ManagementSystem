@@ -3,7 +3,8 @@ const tourOpratorScehma =new mongoose.Schema({
     role:{
         type:String,
         require:true,
-        Enumerator:'tour-operator'
+        default:'tour-operator'
+    
           
     },
 name:{
@@ -17,12 +18,17 @@ email:{
     trim:true,
     unique:true
 },
+password:{
+    type:String,
+    require:true,
+    minlength:6
+},
 mobile_number:{
     type:Number,
     require:true,
     unique:true
 },
-address:{
+addresss:{
     type:String,
     require:true
 },

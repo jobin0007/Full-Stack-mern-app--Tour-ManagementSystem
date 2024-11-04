@@ -7,7 +7,7 @@ const adminRoutes= express.Router()
 adminRoutes.post('/register',adminControllers.register)
 adminRoutes.post('/login',adminControllers.login)
 adminRoutes.get('/get_all_role_changing_requests',authentication,adminControllers.getRoleRequest)
-adminRoutes.patch('/handle_role_change/:requestId',authentication,adminControllers.handleRoleChange)
+adminRoutes.put('/handle_role_change/:requestId',authentication,adminControllers.handleRoleChange)
 // adminRoutes.get('/getting/:id',authentication,adminControllers.getOneRequest)
 
 

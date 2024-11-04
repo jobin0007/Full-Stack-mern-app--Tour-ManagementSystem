@@ -10,27 +10,21 @@ if(!cookies){
 }
 const jwtdecode =jwt.decode(cookies)
 
-if(jwtdecode.role =='user'){
-    req.user= jwtdecode.userId
-    console.log("user",jwtdecode.userId);
-    
-  
+switch (jwtdecode.role) {
+  case 'user':
+      req.user = jwtdecode.userId;
+      break;
+  case 'admin':
+      req.admin = jwtdecode.adminId;
+      break;
+  case 'tour-operator':
+      req.tourOperator = jwtdecode.tourOperatorId;
+      console.log(jwtdecode.tourOperatorId);
+      break;
+  default:
+      return res.status(403).json({ message: "Authentication failed: Invalid role" });
 }
-else if(jwtdecode.role == 'admin'){
-  req.admin= jwtdecode.adminId
-  console.log("admin",jwtdecode.adminId);
 
-}
-
-else if(!jwtdecode.role == 'tour-operator'){
-  req.tourOperator= jwtdecode.tourOperatorId
-  console.log("tourOperator",jwtdecode.tourOperatorId);
- 
-}
-else{
-  throw new Error("Authentication Failed")
-  
-}
 
 next()
 
