@@ -8,6 +8,7 @@ tourOperatorRoutes.post('/register',tourOperatorControllers.register)
 tourOperatorRoutes.post('/login',tourOperatorControllers.login)
 tourOperatorRoutes.get('/get_tour_operator_profile/:id',tourOperatorControllers.getProfileTourOperator)
 tourOperatorRoutes.put('/update_mobile_number',authentication,tourOperatorControllers.updateMobileNumber)
+tourOperatorRoutes.get('/get-my-tours',authentication,tourOperatorControllers.getTourOperatorTour)
 
 module.exports = tourOperatorRoutes
 

@@ -99,53 +99,92 @@ const adminControllers = {
             requests
         })
     }),
-    handleRoleChange: asyncHandler(async (req, res) => {
+    acceptRoleChange: asyncHandler(async (req, res) => {
 
         const { action } = req.body
         const { requestId } = req.params
         if (!action) {
-            throw new Error("Give approval either approved or rejected")
+            throw new Error("Please Give Action ")
         }
 
-        const request = await RoleChangeRequest.findOne({ userId: requestId });
+        const request = await RoleChangeRequest.findOne({ _id: requestId });
 
         if (!request || request.status !== 'pending') {
             throw new Error("Requests not found or already processed")
         }
-        if (action === 'approve') {
-            await Users.findByIdAndUpdate(requestId, { role: 'tour-operator' })
-            const status = request.status
+        if (action !== 'approve') {
+            throw new Error("Please Give Correct Action ")
+        }
+        const foundUserById = request.userId
+        await Users.findByIdAndUpdate(foundUserById, { role: 'tour-operator' })
+        await RoleChangeRequest.findByIdAndUpdate(foundUserById, { status: 'approved' })
 
-            const foundUser = await Users.findById(requestId)
+        const foundUser = await Users.findById(foundUserById)
+        const tourOperatorPassword = foundUser.password
+        const hashedPassword = await bcrypt.hash(tourOperatorPassword, 10)
+        await TourOperator.create({
+            name: foundUser.name,
+            role: foundUser.role,
+            password:foundUser.password,
+            email: foundUser.email,
+            mobile_number: foundUser.mobile_number,
+            address: foundUser.address
+        
 
-            const newTourOperator = await TourOperator.create({
-                name: foundUser.name,
-                role: foundUser.role,
-                email: foundUser.email,
-                mobile_number: foundUser.mobile_number,
-                address: foundUser.address
-
-            })
-           
-            await Users.findByIdAndDelete(requestId);
-           
-            await RoleChangeRequest.findByIdAndDelete(requestId);
-            request.status = 'approved';
+        })
+        const name = foundUser.name
+        const email = foundUser.email
+        const role  = foundUser.role
+        const payload = {
+            role,
+            name,
+            email
 
         }
-        else if (action === 'reject') {
-            request.status = 'rejected';
-        }
-        else {
-            throw new Error("Invalid action")
-        }
+        const token = jwt.sign(payload, process.env.PRIVATE_KEY)
+        res.cookie('tourOperatorData', token, {
+            maxAge: 2 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            secure: false,
+            sameSite: "none"
 
+        })
+      
+        request.status = 'approved';
+        await Users.findByIdAndDelete(foundUserById);
         await request.save();
-
+        await RoleChangeRequest.findByIdAndDelete(requestId);
 
         res.json({ message: `Request ${action}d Successfully`, request })
 
     }),
+
+    cancelRoleChange: asyncHandler(async (req, res) => {
+
+        const { action } = req.body
+        const { requestId } = req.params
+        if (!action) {
+            throw new Error("Please Give Action ")
+        }
+
+        const request = await RoleChangeRequest.findOne({ _id: requestId });
+
+        if (!request || request.status !== 'pending') {
+            throw new Error("Requests not found or already processed")
+        }
+        if (action !== 'reject') {
+            throw new Error("Please Give Correct Action ")
+        }
+        const foundUserById = request.userId
+        await Users.findByIdAndUpdate(foundUserById, { role: 'user' })
+        await RoleChangeRequest.findByIdAndUpdate(foundUserById, { status: 'Rejected' })
+        request.status = 'rejected';
+        await request.save();
+        await RoleChangeRequest.findByIdAndDelete(requestId);
+
+        res.json({ message: `Request ${action}d Successfully`, request })
+
+    })
 
 
 

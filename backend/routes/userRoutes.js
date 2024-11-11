@@ -10,4 +10,6 @@ userRoutes.put('/update',authentication,userControllers.updateMobileNumber)
 userRoutes.delete('/delete',authentication,userControllers.deleteUser)
 userRoutes.patch('/request-tour-operator',authentication,userControllers.requestTourOPerator)
 
+
+
 module.exports= userRoutes

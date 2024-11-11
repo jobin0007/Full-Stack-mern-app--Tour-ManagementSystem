@@ -13,13 +13,14 @@ const jwtdecode =jwt.decode(cookies)
 switch (jwtdecode.role) {
   case 'user':
       req.user = jwtdecode.userId;
+      
       break;
   case 'admin':
       req.admin = jwtdecode.adminId;
       break;
   case 'tour-operator':
       req.tourOperator = jwtdecode.tourOperatorId;
-      console.log(jwtdecode.tourOperatorId);
+   
       break;
   default:
       return res.status(403).json({ message: "Authentication failed: Invalid role" });

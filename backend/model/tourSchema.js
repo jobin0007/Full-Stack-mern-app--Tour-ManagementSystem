@@ -1,6 +1,11 @@
 const mongoose = require('mongoose')
 const tourScehma = new mongoose.Schema({
-    name: {
+    tourOperatorId: { 
+        type: Object, 
+        ref: 'TourOperator',
+         required: true },
+    
+    title: {
         type: String,
         require: true,
         trim: true
@@ -11,8 +16,18 @@ const tourScehma = new mongoose.Schema({
         trim: true
 
     },
+
+    status: {
+        type: String,
+        enum: ['active', 'inactive'],
+        default: 'active'
+    },
+    destinations: {
+        type: String,
+        require: true
+    },
     duration: {
-        type: Number,
+        type: String,
         require: true,
         trim: true
 
@@ -23,8 +38,15 @@ const tourScehma = new mongoose.Schema({
         trim: true
 
     },
-    availableSpots: { type: Number, 
-        required: true },
+    availableSpots: {
+        type: Number,
+        required: true
+    },
+    bookingStatus:{
+        type:String,
+        enum: ['booked', 'not-booked'],
+        default:'not-booked'
+    }
 
 }, { timestamps: true })
 

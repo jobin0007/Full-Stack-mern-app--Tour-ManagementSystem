@@ -2,12 +2,14 @@ const asyncHandler = require('express-async-handler')
 const TourOperator = require('../model/tourOperatorsSchema')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const Tour = require('../model/tourSchema')
+
 
 
 const tourOperatorControllers = {
     register: asyncHandler(async (req, res) => {
-        const { name, email, mobile_number, address,password, commission_rate } = req.body
-        if (!name || !email || !address || !password || !mobile_number || !commission_rate) {
+        const { name, email, mobile_number, address, password } = req.body
+        if (!name || !email || !address || !password || !mobile_number) {
             throw new Error("Please Give Required Fields ")
         }
         const existingOperator = await TourOperator.findOne({ email })
@@ -17,6 +19,8 @@ const tourOperatorControllers = {
         const hashedPassword = await bcrypt.hash(password, 10)
         const newTourOperator = await TourOperator.create({
             name,
+            mobile_number,
+            address,
             email,
             password: hashedPassword,
             mobile_number
@@ -62,12 +66,13 @@ const tourOperatorControllers = {
             throw new Error("Sorry...Tour Operator Not Found")
 
         }
-        const passwordCheck = await bcrypt.compare(password, tourOpertor.password)
-
+   
+        const passwordCheck =await bcrypt.compare(password, tourOpertor.password)
+    
         if (!passwordCheck) {
             throw new Error("Password Is Incorrect")
         }
-        console.log(tourOpertor.role);
+      
         const token = jwt.sign({ tourOperatorId: tourOpertor.id, role: tourOpertor.role }, process.env.PRIVATE_KEY, { expiresIn: '4hr' })
         res.cookie('token', token, {
             maxAge: 2 * 24 * 60 * 60 * 1000,
@@ -83,6 +88,8 @@ const tourOperatorControllers = {
 
 
     }),
+
+
 
 
 
@@ -103,37 +110,47 @@ const tourOperatorControllers = {
 
 
     }),
-    updateMobileNumber:asyncHandler(async(req,res)=>{
-        const {email} = req.body
-        const id= req.tourOperator 
-        const{mobile_number}= req.body
-console.log("id ",id);
-        if(!mobile_number){
+    updateMobileNumber: asyncHandler(async (req, res) => {
+        const { email } = req.body
+        const id = req.tourOperator
+        const { mobile_number } = req.body
+        console.log("id ", id);
+        if (!mobile_number) {
             throw new Error("please give required details")
         }
-        if(!id){
+        if (!id) {
             throw new Error("tour operator not found")
         }
-        const found= await TourOperator.findOne({email})
-        if(!found){
+        const found = await TourOperator.findOne({ email })
+        if (!found) {
             throw new Error("Tour operator not found for this given email")
         }
-        const updated = await TourOperator.findByIdAndUpdate(id,{mobile_number},{new:true})
-        if(!updated){
+        const updated = await TourOperator.findByIdAndUpdate(id, { mobile_number }, { new: true })
+        if (!updated) {
             throw new Error("Updation Of Mobile Number Failed")
         }
         res.json({
-            message:"Mobile Number Updated Successfully",
+            message: "Mobile Number Updated Successfully",
             updated
         })
-    })
+    }),
+    getTourOperatorTour:asyncHandler(async(req,res)=>{
+        const tourOperatorId = req.tourOperator
+        if(!tourOperatorId){
+            throw new Error("Tour Operator Not Found")
+        }
+        const findOperatorsTour= await Tour.findOne({tourOperatorId})
+        console.log(findOperatorsTour);
+        if(!findOperatorsTour){
+            throw new Error("No Tours Created By the Given TourOperatorId")
+        }
+        res.json({
+            message:"Tours For The Given Tour Operator ",
+            findOperatorsTour
+        })
 
+    })
+   
 
 }
-
-
-
-
-
-
 module.exports = tourOperatorControllers

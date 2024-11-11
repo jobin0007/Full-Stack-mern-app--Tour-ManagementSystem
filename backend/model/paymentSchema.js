@@ -1,6 +1,19 @@
 const mongoose = require('mongoose')
 const paymentScehma = new mongoose.Schema({
 
+
+    user: {
+        type: Object,
+        ref: 'Users',
+        required: true
+    },
+    booking: {
+        type: Object,
+        ref: 'Bookings',
+        required: true
+    },
+    
+
     payment_date:{
         type:Date,
         require:true,
@@ -13,10 +26,16 @@ const paymentScehma = new mongoose.Schema({
         trim:true
     
     },
-    payment_method:{
-        type:String,
-        require:true
-    }
+    paymentMethod: {
+        type: String,
+        enum: ['credit_card', 'paypal', 'bank_transfer', 'cash'],
+        required: true
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'completed', 'failed', 'refunded'],
+        default: 'pending'
+    },
     
 },{timestamps:true})
 const Payment = mongoose.model('Payment',paymentScehma)
