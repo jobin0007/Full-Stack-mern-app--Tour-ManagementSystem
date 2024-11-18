@@ -5,7 +5,7 @@ const tourOperatorRoutes = require('../routes/tourOperatorRoutes')
 const Users = require('../model/userSchema')
 const bookingController = {
     createBooking: asyncHandler(async (req, res) => {
-        const id = req.user
+        const {id} = req.user
         const { foundTourId } = req.params
         const { start_date, end_date } = req.body
         if (!id) {
@@ -33,6 +33,7 @@ const bookingController = {
         if (existingTourRequest) {
             throw new Error("You Have Already A Pending Tour Request. Please Try After Cancel It")
         }
+
         const userDetail= await Users.findOne({id})
         const createBooking = await Bookings.create({
 

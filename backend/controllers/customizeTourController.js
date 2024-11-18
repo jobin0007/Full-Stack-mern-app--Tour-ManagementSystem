@@ -120,13 +120,13 @@ const customizedTourControllers = {
         const foundUserId = found.userId
         const detail = await Users.findById(foundUserId)
         console.log(foundUserId);
-        const existingAcceptedRequest = await Bookings.findOne({ tourId: foundTourId })
-        if (existingAcceptedRequest) {
-            throw new Error("This One Already Processed")
-        }
+        // const existingAcceptedRequest = await Bookings.findOne({ tourId: foundTourId })
+        // if (existingAcceptedRequest) {
+        //     throw new Error("This One Already Processed")
+        // }
         const booked = await Bookings.create({
             tourId: foundTourId,
-            userId: found,
+            userId: detail.id,
             tourOperatorId: foundTourOperatorId,
             userName: detail.name,
             userMobileNUmber: detail.mobile_number,
@@ -137,7 +137,9 @@ const customizedTourControllers = {
             end_date: found.end_date,
             participants: found.participants,
         })
-        await CustomizedTours.findByIdAndUpdate(foundTourId, { status: 'accepted' })
+        await Bookings.findByIdAndUpdate(foundTourId,{booking_status:'accepted'}, { new: true })
+        await CustomizedTours.findByIdAndUpdate(foundTourId, { status: 'accepted' }, { new: true })
+     
 
         res.json({
             message: "Tour accepted Successfully",

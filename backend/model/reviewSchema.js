@@ -1,20 +1,6 @@
 const mongoose = require('mongoose')
 const reviewScehma =new mongoose.Schema({
-    user: {
-        type:Object,
-        ref: 'Users',
-        required: true
-    },
-    tour: {
-        type:Object,
-        ref: 'Tour',
-        required: true
-    },
-    tourOperator: {
-        type: Object,
-        ref: 'TourOperator',
-        required: true
-    },
+
     rating: {
         type: Number,
         required: true,
