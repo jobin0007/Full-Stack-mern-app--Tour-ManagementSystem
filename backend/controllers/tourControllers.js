@@ -68,6 +68,7 @@ const tourControllers={
           
         }
          throw new Error("Unauthorized Access ")
-    })
+    }),
+    
 }
 module.exports = tourControllers

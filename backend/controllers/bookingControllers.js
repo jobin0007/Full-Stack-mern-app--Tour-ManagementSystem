@@ -79,13 +79,22 @@ const bookingController = {
     }),
     getOneBooking:asyncHandler(async(req,res)=>{
         const tourOperatorId = req.tourOperator
-        const userId =   req.user 
-        if(!userId){
-          throw new Error("user not found")
-        }
-        else if(!tourOperatorId){
+         const {bookingId} = req.params
+        if(!tourOperatorId){
             throw new Error("")  
         }
+        if(!bookingId){
+            throw new Error("Please Give Required Fields")
+        }
+        const foundBooking = await Bookings.findById(bookingId)
+        if(!foundBooking){
+            throw new Error("There is no Booking For this given Id")
+
+        }
+        res.json({
+            message:"booking found successfully",
+            foundBooking
+        })
     })
 
 }

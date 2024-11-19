@@ -10,13 +10,13 @@ const customizedTourControllers = {
     createCustomizedTour: asyncHandler(async (req, res) => {
         const id = req.user
         // if(!title||!description||!duration||!price||!destinations||! availableSpots)
-        const { title, description, start_date, end_date, budget, participants } = req.body
+        const { title,location, description, start_date, end_date, budget, participants } = req.body
 
         if (!id) {
             throw new Error('User not Found')
         }
         console.log(id);
-        if (!title || !description || !budget || !participants || !start_date || !end_date) {
+        if (!title || !description ||!location|| !budget || !participants || !start_date || !end_date) {
             throw new Error('Give All Fields')
         }
 
@@ -29,6 +29,7 @@ const customizedTourControllers = {
         const createCustomize = await CustomizedTours.create({
             userId: id,
             title,
+            location,
             description,
             start_date,
             end_date,
@@ -96,55 +97,5 @@ const customizedTourControllers = {
     }
 
     ),
-    acceptCustomTour: asyncHandler(async (req, res) => {
-        const foundTourOperatorId = req.tourOperator
-        const { foundTourId } = req.params
-        const { total_price } = req.body
-        const { action } = req.body
-        if (!foundTourOperatorId) {
-            throw new Error("Tour Operator Not Found")
-        }
-        const checkingStatus = await CustomizedTours.findById(foundTourId, { status: 'pending' })
-        if (!total_price || !action) {
-            throw new Error("Give price and approval")
-        }
-        // console.log(checkingStatus);
-        if (!checkingStatus) {
-            throw new Error("This Request is already Handled or Invalid Tour")
-        }
-        if (action !== 'accept') {
-            throw new Error("Please Give Correct Action")
-
-        }
-        const found = await CustomizedTours.findById(foundTourId)
-        const foundUserId = found.userId
-        const detail = await Users.findById(foundUserId)
-        console.log(foundUserId);
-        // const existingAcceptedRequest = await Bookings.findOne({ tourId: foundTourId })
-        // if (existingAcceptedRequest) {
-        //     throw new Error("This One Already Processed")
-        // }
-        const booked = await Bookings.create({
-            tourId: foundTourId,
-            userId: detail.id,
-            tourOperatorId: foundTourOperatorId,
-            userName: detail.name,
-            userMobileNUmber: detail.mobile_number,
-            title: found.title,
-            description: found.description,
-            total_price,
-            start_date: found.start_date,
-            end_date: found.end_date,
-            participants: found.participants,
-        })
-        await Bookings.findByIdAndUpdate(foundTourId,{booking_status:'accepted'}, { new: true })
-        await CustomizedTours.findByIdAndUpdate(foundTourId, { status: 'accepted' }, { new: true })
-     
-
-        res.json({
-            message: "Tour accepted Successfully",
-            booked
-        })
-    })
-}
+   }
 module.exports = customizedTourControllers

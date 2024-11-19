@@ -14,7 +14,7 @@ const routes = express()
 
 routes.use('/user',userRoutes)
 routes.use('/admin',adminRoutes)
-routes.use('/tour_operator',tourOperatorRoutes)
+routes.use('/tour-operator',tourOperatorRoutes)
 routes.use('/tour',tourRoutes)
 routes.use('/cusomized-tour',customizedTourRoutes)
 routes.use('/bookings',bookingRoutes)

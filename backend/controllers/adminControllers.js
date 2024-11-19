@@ -5,6 +5,7 @@ const Admin = require('../model/adminSchema')
 const Users = require('../model/userSchema')
 const RoleChangeRequest = require('../model/roleChangeRequestingSchema')
 const TourOperator = require('../model/tourOperatorsSchema')
+const Tour = require("../model/tourSchema")
 
 
 
@@ -185,7 +186,64 @@ const adminControllers = {
         res.json({ message: `Request ${action}d Successfully`, request })
 
     }),
-    
+    deleteUser:asyncHandler(async(req,res)=>{
+       const adminId = req.admin
+       const {userId} = req.params
+       if(!adminId){
+        throw new Error("Admin not Found")
+       }
+       if(!userId){
+        throw new Error("User not Found")
+       }
+       const deleted = await Users.findByIdAndDelete(userId)
+       if(!deleted){
+        throw new Error("User Not Deleted")
+       }
+
+       res.json({
+        message:"User successfully Deleted ",
+        deleted
+       })
+    }),
+    deleteTourOperator:asyncHandler(async(req,res)=>{
+        const adminId = req.admin
+        const {operatorId} = req.params
+        if(!adminId){
+         throw new Error("Admin not Found")
+        }
+        if(!operatorId){
+         throw new Error("Tour Operator not Found")
+        }
+        const deleted = await TourOperator.findByIdAndDelete(operatorId)
+        if(!deleted){
+         throw new Error(" Sorry....Tour OPeartor Not Deleted")
+        }
+ 
+        res.json({
+         message:"Tour Operator successfully Deleted ",
+         deleted
+        })
+     }),
+     deleteTour:asyncHandler(async(req,res)=>{
+        const adminId = req.admin
+        const {tourId} = req.params
+        if(!adminId){
+         throw new Error("Admin not Found")
+        }
+        if(!tourId){
+         throw new Error("Tour not Found")
+        }
+        const deleted = await Tour.findByIdAndDelete(tourId)
+        if(!deleted){
+         throw new Error(" Sorry....Tour Not Deleted")
+        }
+ 
+        res.json({
+         message:"Tour successfully Deleted ",
+         deleted
+        })
+     }),
+ 
 
 
 

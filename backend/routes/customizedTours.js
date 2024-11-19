@@ -6,7 +6,6 @@ const customizedTourRoutes = express.Router()
 customizedTourRoutes.post('/create-customize-tour',authentication,customizedTourControllers.createCustomizedTour)
 customizedTourRoutes.get('/all-customized-tour-requests',authentication,customizedTourControllers.getAllCustomizedTours)
 customizedTourRoutes.get('/:customTourId',authentication,customizedTourControllers.getOneCustomizedTour)
-customizedTourRoutes.put('/accept-custom-tour/:foundTourId',authentication,customizedTourControllers.acceptCustomTour)
 
 
 module.exports = customizedTourRoutes

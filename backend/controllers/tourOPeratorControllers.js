@@ -149,7 +149,59 @@ const tourOperatorControllers = {
             findOperatorsTour
         })
 
+    }), 
+    acceptCustomTour: asyncHandler(async (req, res) => {
+        const foundTourOperatorId = req.tourOperator
+        const { foundTourId } = req.params
+        const { total_price } = req.body
+        const { action } = req.body
+        if (!foundTourOperatorId) {
+            throw new Error("Tour Operator Not Found")
+        }
+        const checkingStatus = await CustomizedTours.findById(foundTourId, { status: 'pending' })
+        if (!total_price || !action) {
+            throw new Error("Give price and approval")
+        }
+        // console.log(checkingStatus);
+        if (!checkingStatus) {
+            throw new Error("This Request is already Handled or Invalid Tour")
+        }
+        if (action !== 'accept') {
+            throw new Error("Please Give Correct Action")
+
+        }
+        const found = await CustomizedTours.findById(foundTourId)
+        const foundUserId = found.userId
+        const detail = await Users.findById(foundUserId)
+        console.log(foundUserId);
+        // const existingAcceptedRequest = await Bookings.findOne({ tourId: foundTourId })
+        // if (existingAcceptedRequest) {
+        //     throw new Error("This One Already Processed")
+        // }
+        const booked = await Bookings.create({
+            tourId: foundTourId,
+            userId: detail.id,
+            tourOperatorId: foundTourOperatorId,
+            userName: detail.name,
+            userMobileNUmber: detail.mobile_number,
+            title: found.title,
+            location:found.location,
+            description: found.description,
+            total_price,
+            start_date: found.start_date,
+            end_date: found.end_date,
+            participants: found.participants,
+        })
+        await Bookings.findByIdAndUpdate(foundTourId,{booking_status:'accepted'}, { new: true })
+        await CustomizedTours.findByIdAndUpdate(foundTourId, { status: 'accepted' }, { new: true })
+     
+
+        res.json({
+            message: "Tour accepted Successfully",
+            booked
+        })
     })
+
    
 
 }
