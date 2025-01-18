@@ -81,7 +81,7 @@ const adminControllers = {
         })
         res.json({
             message: "Login Successfull",
-            foundAdmin
+            token
         })
     }
     ),
@@ -102,20 +102,24 @@ const adminControllers = {
     }),
     acceptRoleChange: asyncHandler(async (req, res) => {
 
-        const { action } = req.body
+        // const { action } = req.body
         const { requestId } = req.params
-        if (!action) {
-            throw new Error("Please Give Action ")
-        }
-
+        const adminId = req.admin
+        if(!adminId){
+            throw new Error("Admin not Found")
+           }
+        // if (!action) {
+        //     throw new Error("Please Give Action ")
+        // }
+    
         const request = await RoleChangeRequest.findOne({ _id: requestId });
 
         if (!request || request.status !== 'pending') {
             throw new Error("Requests not found or already processed")
         }
-        if (action !== 'approve') {
-            throw new Error("Please Give Correct Action ")
-        }
+        // if (action !== 'approve') {
+        //     throw new Error("Please Give Correct Action ")
+        // }
         const foundUserById = request.userId
         await Users.findByIdAndUpdate(foundUserById, { role: 'tour-operator' })
         await RoleChangeRequest.findByIdAndUpdate(foundUserById, { status: 'approved' })
@@ -162,20 +166,24 @@ const adminControllers = {
 
     cancelRoleChange: asyncHandler(async (req, res) => {
 
-        const { action } = req.body
+        // const { action } = req.body
         const { requestId } = req.params
-        if (!action) {
-            throw new Error("Please Give Action ")
-        }
+        const adminId = req.admin
+        if(!adminId){
+            throw new Error("Admin not Found")
+           }
+        // if (!action) {
+        //     throw new Error("Please Give Action ")
+        // }
 
         const request = await RoleChangeRequest.findOne({ _id: requestId });
 
         if (!request || request.status !== 'pending') {
             throw new Error("Requests not found or already processed")
         }
-        if (action !== 'reject') {
-            throw new Error("Please Give Correct Action ")
-        }
+        // if (action !== 'reject') {
+        //     throw new Error("Please Give Correct Action ")
+        // }
         const foundUserById = request.userId
         await Users.findByIdAndUpdate(foundUserById, { role: 'user' })
         await RoleChangeRequest.findByIdAndUpdate(foundUserById, { status: 'Rejected' })
@@ -183,7 +191,7 @@ const adminControllers = {
         await request.save();
         await RoleChangeRequest.findByIdAndDelete(requestId);
 
-        res.json({ message: `Request ${action}d Successfully`, request })
+        res.json({ message: `Request canceled Successfully`, request })
 
     }),
     deleteUser:asyncHandler(async(req,res)=>{

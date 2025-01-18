@@ -44,9 +44,9 @@ const tourControllers={
 
 
     ,getTours:asyncHandler(async(req,res)=>{
-        const id= req.user
-        const adminId = req.admin
-        if(id){
+        // const id= req.user
+        // const adminId = req.admin
+        // if(id){
             const getTour = await Tour.find({status:'active'}).populate('tourOperatorId','name')
             if(!getTour){
                 throw new Error("Sorry....No Tours Available Now")
@@ -55,19 +55,19 @@ const tourControllers={
                 message:" Availble Tours",
                 getTour
             })
-        }
-         if(adminId){
-            const getTour = await Tour.find({status:'active'}).populate('tourOperatorId','name')
-            if(!getTour){
-                throw new Error("Sorry....No Tours Available Now")
-            }
-            res.json({
-                message:" Availble Tours",
-                getTour
-            })
+        // }
+        //  if(adminId){
+        //     const getTour = await Tour.find({status:'active'}).populate('tourOperatorId','name')
+        //     if(!getTour){
+        //         throw new Error("Sorry....No Tours Available Now")
+        //     }
+        //     res.json({
+        //         message:" Availble Tours",
+        //         getTour
+        //     })
           
-        }
-         throw new Error("Unauthorized Access ")
+        // }
+        //  throw new Error("Unauthorized Access ")
     }),
     
 }

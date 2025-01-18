@@ -4,13 +4,13 @@ const Bookings = require('../model/bookingsSchema')
 const tourOperatorRoutes = require('../routes/tourOperatorRoutes')
 const Users = require('../model/userSchema')
 const bookingController = {
-    createBooking: asyncHandler(async (req, res) => {
-        const {id} = req.user
+    createBooking: asyncHandler(async (req,res) => {
+        const id = req.user
         const { foundTourId } = req.params
         const { start_date, end_date } = req.body
-        if (!id) {
-            throw new Error("User Not Found")
-        }
+        if(!id){
+            throw new Error("Authentication failed")
+           }
         if (!start_date || !end_date) {
             throw new Error("Please Give All Fields")
         }
@@ -34,7 +34,7 @@ const bookingController = {
             throw new Error("You Have Already A Pending Tour Request. Please Try After Cancel It")
         }
 
-        const userDetail= await Users.findOne({id})
+        const userDetail= await Users.findById(id)
         const createBooking = await Bookings.create({
 
             tourId: foundTourId,
@@ -77,6 +77,28 @@ const bookingController = {
 
 
     }),
+getUserBookings:asyncHandler(async(req,res)=>{
+    // const user = req.user
+    const userId= req.params
+    // if(!user){
+    //     throw new Error('Authentication Failed')
+    // }
+    if(!userId){
+        throw new Error('User not found')
+    }
+    const foundBookings = await Bookings.findOne({userId})
+    if(!foundBookings){
+        throw new Error("No more bookings")
+    }
+    res.json({
+        message:'bookings are',
+        foundBookings
+    })
+
+
+})
+,
+
     getOneBooking:asyncHandler(async(req,res)=>{
         const tourOperatorId = req.tourOperator
          const {bookingId} = req.params

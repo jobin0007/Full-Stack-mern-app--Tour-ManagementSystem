@@ -6,7 +6,7 @@ const tourRoutes = express.Router()
 
 
 tourRoutes.post('/create_tour',authentication,tourControllers.createTour)
-tourRoutes.get('/get_all_tour',authentication,tourControllers.getTours)
+tourRoutes.get('/get_all_tour',tourControllers.getTours)
 
 
 
