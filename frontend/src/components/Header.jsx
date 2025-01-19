@@ -9,6 +9,7 @@ import about from "../assets/id-card.png";
 import services from "../assets/customer-service.png";
 import Examplemage from "../assets/360_F_818523251_T67ETZ2Dx8YMq9aQKgTeRw4ok5mCaeou.jpg";
 import { GrSearch } from "react-icons/gr";
+import Search from "./Search";
 
 
 
@@ -45,9 +46,7 @@ const Header = () => {
       </div>
       </Link>
       <div className=' hidden lg:flex '>
-        <button className="transition-transform duration-300 hover:scale-110">
-        <SearcBox  className='w-full'/>
-        </button>
+ 
       
 
                  </div>
@@ -62,7 +61,7 @@ const Header = () => {
       <div className="relative inline-block text-left">
       {/* Logo and Question */}
       <div className="flex items-center space-x-4">
-      
+{/*       
         <button
           onClick={toggleDropdown}
           className="inline-flex items-center px-4 py-2 text-sm font-medium text-white "
@@ -74,7 +73,7 @@ const Header = () => {
         />
          
    
-        </button>
+        </button> */}
       </div>
 
       {/* Dropdown Menu */}

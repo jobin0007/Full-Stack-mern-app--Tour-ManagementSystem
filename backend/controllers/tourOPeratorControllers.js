@@ -83,7 +83,7 @@ const tourOperatorControllers = {
 
         res.json({
             message: 'Login Successfull',
-            tourOpertor
+            token
         })
 
 

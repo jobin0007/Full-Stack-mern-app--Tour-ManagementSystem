@@ -3,6 +3,8 @@ import userReducer from "./userSlice";
 import tourReducer from './tourSlice'
 import adminReducer from './adminSlice'
 import requestReducer from './requestSlice'
+import tourOperatorReducer from './tourOperatoSlice'
+
 
 
 
@@ -11,7 +13,8 @@ const store = configureStore({
     user: userReducer,
     admin:adminReducer,
     tours:tourReducer,
-    request:requestReducer
+    request:requestReducer,
+    tourOperator:tourOperatorReducer
 
   },
 });

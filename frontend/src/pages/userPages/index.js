@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { FaUserEdit, FaBook, FaTrashAlt, FaBars } from "react-icons/fa";
+import { FaUserEdit, FaBook, FaTrashAlt, FaBars, FaUserCircle } from "react-icons/fa";
+import { MdCreateNewFolder } from "react-icons/md";
 import { getOneUserAPI } from "../../services/userServices";
 import Tours from "../tours";
+import Search from "../../components/Search";
 
 const UserDashboard = () => {
   const { id: userId } = useParams();
@@ -33,6 +35,12 @@ const UserDashboard = () => {
             isSidebarOpen ? "block" : "hidden lg:block"
           }`}
         >
+          
+            <FaUserCircle className="text-indigo-500 text-4xl mx-auto" />
+            <h1 className="text-2xl font-bold mb-4">
+            Welcome, <span className="text-indigo-500">{userFound.name}</span>
+          </h1>
+              
           <h2 className="text-lg font-semibold mb-4">Menu</h2>
           <ul className="space-y-3">
             <li className="flex items-center gap-2 text-sm hover:text-indigo-600 cursor-pointer transition duration-200">
@@ -44,6 +52,13 @@ const UserDashboard = () => {
             <li className="flex items-center gap-2 text-sm hover:text-indigo-600 cursor-pointer transition duration-200">
               <FaBook /> View Booked Tours
             </li>
+            <Link to={`/user/${userFound?._id}/create-custom-tour`} 
+            className="flex items-center gap-2 text-sm hover:text-indigo-600 cursor-pointer transition duration-200"
+            >
+           
+              <MdCreateNewFolder /> Customize Your Tours
+         
+            </Link>
             <li className="mt-6 text-sm text-indigo-500 underline cursor-pointer hover:text-indigo-700 transition duration-200">
               Request Role Change to Tour Operator
             </li>
@@ -60,10 +75,9 @@ const UserDashboard = () => {
 
         {/* Middle Content */}
         <div className="bg-white shadow-md rounded-md p-6 lg:col-span-4">
-          <h1 className="text-2xl font-bold mb-4">
-            Welcome, <span className="text-indigo-500">{userFound.name}</span>
-          </h1>
-          <h2 className="text-lg font-semibold mb-4">Tours</h2>
+        
+        
+          <Search/>
           <Tours userData={userFound}/>
         </div>
       </div>

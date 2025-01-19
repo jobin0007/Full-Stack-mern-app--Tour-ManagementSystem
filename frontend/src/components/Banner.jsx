@@ -4,7 +4,7 @@ import ExampleImage from "../assets/360_F_818523251_T67ETZ2Dx8YMq9aQKgTeRw4ok5mC
 const Banner = () => {
   return (
     <div
-      className="relative w-full h-[70vh] sm:h-screen flex items-center justify-center bg-cover bg-no-repeat bg-center"
+      className="relative w-full h-[70vh] sm:h-screen flex items-center justify-center bg-cover bg-no-repeat bg-center mb-4 "
       style={{
         backgroundImage: `url(${ExampleImage})`,
       }}

@@ -3,9 +3,6 @@ import Cookies from 'js-cookie';
 
 
 
-
-
-
 // export const adminTokenData = () => { 
 
 //   return Cookies.get('AdminData') ? jwtDecode(Cookies.get('AdminData')) : null;  
@@ -21,3 +18,7 @@ export const getAdminToken = ()=>{
   export const getUserData = () => {
     return Cookies.get("UserData"); 
   };
+
+  export const getTourOperatorData =()=>{
+    return Cookies.get("tourOperatorData");
+  }
