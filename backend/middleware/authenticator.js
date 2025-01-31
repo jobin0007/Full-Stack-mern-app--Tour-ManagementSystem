@@ -3,11 +3,10 @@ const jwt = require('jsonwebtoken')
 const authentication = (req,res,next)=>{
 
 
-//   const cookies = req.cookies.token
+//   const cookies = req.cookies.token 
   const cookies = req.headers['authorization']?.split(' ')[1];
     //    const cookies = cookie.token
-    // console,log('cookies',cookies) 
-    // console.log(req.headers);
+ 
 if(!cookies){
     throw new Error("User Not Found")
 }
@@ -29,7 +28,6 @@ switch (jwtdecode.role) {
       return res.status(403).json({ message: "Authentication failed: Invalid role" });
 }
 
-console.log("hi");
 next()
 
 

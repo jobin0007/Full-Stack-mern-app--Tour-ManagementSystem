@@ -9,13 +9,13 @@ const initialState = {
 };
 
 const tourOperatorSlice = createSlice({
-  name: "tourOperator",
+  name: "authentication",
   initialState,
   reducers: {
-    login: (state, action) => {
+    login: ((state, action) => {
       state.tourOperator = action.payload.tourOperator;
       state.token = action.payload.token;
-    },
+    }),
   },
 });
 

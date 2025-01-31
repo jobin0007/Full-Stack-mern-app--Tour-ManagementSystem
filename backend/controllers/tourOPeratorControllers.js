@@ -114,7 +114,6 @@ const tourOperatorControllers = {
         const { email } = req.body
         const id = req.tourOperator
         const { mobile_number } = req.body
-        console.log("id ", id);
         if (!mobile_number) {
             throw new Error("please give required details")
         }
@@ -140,7 +139,6 @@ const tourOperatorControllers = {
             throw new Error("Tour Operator Not Found")
         }
         const findOperatorsTour= await Tour.findOne({tourOperatorId})
-        console.log(findOperatorsTour);
         if(!findOperatorsTour){
             throw new Error("No Tours Created By the Given TourOperatorId")
         }
@@ -162,7 +160,6 @@ const tourOperatorControllers = {
         if (!total_price || !action) {
             throw new Error("Give price and approval")
         }
-        // console.log(checkingStatus);
         if (!checkingStatus) {
             throw new Error("This Request is already Handled or Invalid Tour")
         }
@@ -173,7 +170,6 @@ const tourOperatorControllers = {
         const found = await CustomizedTours.findById(foundTourId)
         const foundUserId = found.userId
         const detail = await Users.findById(foundUserId)
-        console.log(foundUserId);
         // const existingAcceptedRequest = await Bookings.findOne({ tourId: foundTourId })
         // if (existingAcceptedRequest) {
         //     throw new Error("This One Already Processed")

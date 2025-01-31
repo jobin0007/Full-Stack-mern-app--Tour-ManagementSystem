@@ -5,10 +5,19 @@ import { Link } from "react-router-dom";
 import { FaUserCircle, FaBars } from "react-icons/fa";
 import ExampleImage from "../assets/travel.png"; // Replace with your actual image path
 import Search from "../components/Search";
+import SubscriptionSection from "../components/Subcription";
+import Slideshow from "../components/Slideshow";
 
 const Home = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [filters, setFilters] = useState({});  // Store search filters
+
+  // Update filters when user searches
+  const handleSearch = (filterData) => {
+    setFilters(filterData);
+  };
+
 
   return (
     <div className="grid grid-cols-1 grid-flow-row ">
@@ -86,12 +95,16 @@ const Home = () => {
             We selected the 2635 homes worth renting in this location.
           </p>
         </div>
-
-       <Search/>
+  {/* Place Search Bar Here and Pass handleSearch */}
+  <Search onSearch={handleSearch} />
       </header>
-
-      <Tours />
+    
+         {/* Pass filters to Tours */}
+         <Tours filters={filters} />
+         <Slideshow/>
+         <SubscriptionSection/>
       <Banner  />
+     
     </div>
   );
 };

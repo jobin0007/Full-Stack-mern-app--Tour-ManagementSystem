@@ -1,71 +1,65 @@
 import "./App.css";
 import React from "react";
-
-import { Outlet, Route, Router, Routes } from "react-router-dom";
+import { Route, BrowserRouter, Routes } from "react-router-dom";
 import Footer from "./components/Footer";
-import Header from "./components/Header";
-import Index from "./route";
-import UserDashBoard from "./pages/userPages";
+import Home from "./pages/Home";
 import Register from "./pages/userPages/Register";
 import UserLogin from "./pages/userPages/UserLogin";
-import Home from "./pages/Home";
-import TourOperatorDashBoard from "./pages/tourOperator";
-import AdminDashBoard from "./pages/adminPage";
 import AdminLogin from "./pages/adminPage/AdminLogin";
+import UserDashBoard from "./pages/userPages";
+import AdminDashBoard from "./pages/adminPage";
+import TourOperatorDashBoard from "./pages/tourOperator";
 import TourOperatorLogin from "./pages/tourOperator/tourOperatorLogin";
 import CreateTourPage from "./pages/tours/CreateTourPage";
 import CreateCustomTour from "./pages/userPages/CreateCustomTour";
-
-
-
-const LayoutWithHeader = () => {
-  return (
-      <>
-          <Header />
-          <Outlet /> {/* Renders the nested route components */}
-         
-      </>
-  );
-};
- 
-// Layout for routes without a Header
-const LayoutWithoutHeader = () => {
-  return (
-      <>
-          <Outlet /> {/* Renders the nested route components */}
-         
-      </>
-  );
-};
-
+import Viewebookings from "./pages/userPages/Viewebookings";
+import VIewAcceptedTours from "./pages/tourOperator/VIewAcceptedTours";
+import { useSelector } from "react-redux";
 
 function App() {
-  return <>
- 
-      
-        <Routes>
-               {/* Home Route without Header */}
-               <Route element={<LayoutWithoutHeader />}>
-                <Route path="/" element={<Home />} />
-            </Route>
-            {/* <Route path='/' element={<Home/>}/> */}
-            
-            <Route element={<LayoutWithHeader />}>
-                <Route path="user/login" element={<UserLogin />} />
-                <Route path="admin/login" element={<AdminLogin />} />
-                <Route path="user/register" element={<Register />} />
-                <Route path="user/:id" element={<UserDashBoard />} />
-                <Route path="admin" element={<AdminDashBoard />} />
-                <Route path="tour-operator/:id" element={<TourOperatorDashBoard />} />
-                <Route path="tour-operator/login" element={<TourOperatorLogin />} />
-                <Route path="/create-tour" element={<CreateTourPage/>}/>
-                <Route path="/user/:id/create-custom-tour" element={<CreateCustomTour/>}/>
-            </Route>
-        </Routes>
-        <Footer />
-   
-  
-  </>;
+  const user = useSelector((state) => state.user);
+
+  const admin = useSelector((state) => state.admin);
+  const tourOperator = useSelector((state) => state.tourOperator);
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/user/login" element={<UserLogin />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/user/register" element={<Register />} />
+        <Route path="/tour-operator/login" element={<TourOperatorLogin />} />
+
+        {/* Protected Routes for Users */}
+        {user && (
+          <>
+            <Route path="/user/:id" element={<UserDashBoard />} />
+            <Route path="/user/:id/create-custom-tour" element={<CreateCustomTour />} />
+            <Route path="/user/:userId/view-Bookings" element={<Viewebookings />} />
+          </>
+        )}
+
+        {/* Protected Route for Admin */}
+        {admin && <Route path="/admin/:id" element={<AdminDashBoard />} />}
+
+        {/* Protected Routes for Tour Operators */}
+        {tourOperator && (
+          <>
+            <Route path="/tour-operator/:tourOperatorId" element={<TourOperatorDashBoard />} />
+            <Route path="/tour-operator/:tourOperatorId/view-accepted-tours" element={<VIewAcceptedTours />} />
+            <Route path="/create-tour" element={<CreateTourPage />} />
+          </>
+        )}
+
+        {/* Catch-all Route */}
+        <Route path="/*" element={<Home />} />
+      </Routes>
+
+      <Footer />
+    </BrowserRouter>
+  );
 }
 
 export default App;

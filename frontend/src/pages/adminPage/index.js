@@ -1,9 +1,8 @@
 import React from "react";
-
 import { AiOutlineDashboard } from "react-icons/ai";
 import RoleRequests from "./RoleRequests";
 import OtherDuties from "./OtherDuties";
-import Tours from "./Tours";
+import Tour from "./Tours";
 
 function AdminDashBoard() {
   return (
@@ -19,7 +18,7 @@ function AdminDashBoard() {
           <RoleRequests />
         </section>
         <section className="flex-grow bg-white shadow-md rounded-lg p-4 space-y-4">
-          <Tours />
+          <Tour />
         </section>
         <section className="flex-grow bg-white shadow-md rounded-lg p-4 space-y-4">
           <OtherDuties />

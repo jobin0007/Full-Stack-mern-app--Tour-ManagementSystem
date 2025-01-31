@@ -1,95 +1,127 @@
-import React from "react";
-import {  acceptRoleRequestAPI, getAllRoleRequestsAPI } from "../../services/adminServices";
+import React, { useState } from "react";
+import { acceptRoleRequestAPI, cancelRoleRequestAPI, getAllRoleRequestsAPI } from "../../services/adminServices";
 import { useMutation, useQuery } from "@tanstack/react-query";
-
 
 const RoleRequests = () => {
 
+  const[message,setMessage]=  useState({ text: "", type: "" });
 
-  const { mutateAsync} = useMutation({
-    mutationFn:acceptRoleRequestAPI,
-    mutationKey:["request"]
-    })
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["requests"],
+    queryFn: getAllRoleRequestsAPI,
+  });
 
-
-    const handleAccept = async (requestId) => {
-      try {
-        const response = await mutateAsync(requestId);
-        console.log("Response from accept API:", response);
-        // Optionally refetch the role requests after a successful mutation
-      } catch (error) {
-        console.error("Error handling accept:", error.message);
-      }
-    };
-    const { data, isLoading, isError, error } = useQuery({
-      // Cookies.set("AdminData", data?.token);
-      // const decoded = jwtDecode(data.token);
-      // dispatch(login({ admin: decoded, token: data.token }));
-        queryKey: ["requests"], 
-
-        queryFn: getAllRoleRequestsAPI, 
-        
-      });
-       
-    
-      const request = data?.requests  
-
-    
-      
-      if (isLoading) return <div>Loading tours...</div>;
-    
-     
-      if (isError) {
-        return (
-          <div className="text-red-500">
-            Error: {error?.message || "Failed to fetch tours"}
-          </div>
-        );
-      }
-    
-      
-    //   if (tours.length === 0) {
-    //     return <div>No tours available at the moment.</div>;
-    //   }
+  // const { mutateAsync, isLoading: isMutating } = useMutation({
+  //   mutationFn: acceptRoleRequestAPI,
+  //   mutationKey: ["acceptRoleRequest"],
+  // });
+  // const {cancelAsync}=useMutation({
+  //   mutationFn:cancelRoleRequestAPI,
+  //   mutationKey:["cancelRoleRequest"]
+  // })
+  // Accept and cancel role request mutations
+  const acceptMutation = useMutation( {
+    mutationFn: acceptRoleRequestAPI,
+    mutationKey: ["acceptRoleRequest"],
+    onSuccess: (response) => {
+      setMessage({ text: response?.message , type: "success" });
+    },
+    onError: (err) => {
+      setMessage({ text: err?.response?.data?.message , type: "error" });
+    },
+  });
 
 
 
+  const cancelMutation = useMutation({
+    mutationFn:cancelRoleRequestAPI,
+    mutationKey:["cancelRoleRequest"],
+    onSuccess: (response) => {
+      setMessage({ text: response?.message , type: "success" });
+    },
+    onError: (err) => {
+      setMessage({ text: err?.response?.data?.error || "Failed to cancel request", type: "error" });
+    },
+  });
+  const handleAccept = async (requestId) => {
+    await acceptMutation.mutateAsync(requestId);
+  };
+
+  const handleCancel = async (requestId) => {
+    await cancelMutation.mutateAsync(requestId);
+  };
 
 
 
+  if (isLoading) return <div>Loading role requests...</div>;
+
+  if (isError) {
+    return (
+      <div className="text-red-500">
+        Error: {error?.message || "Failed to fetch role requests."}
+      </div>
+    );
+  }
+
+  const requests = data?.requests || [];
 
   return (
     <div>
-    <h2 className="text-xl font-semibold text-sky-500 mb-4">Role Requests</h2>
-    <ul className="space-y-3">
-      {request.map((request) => (
-        <li
-          key={request._id}
-          className="bg-sky-50 p-3 rounded-md flex items-center justify-between shadow-sm"
-        >
-          <div>
-            <p className="text-gray-700 font-medium">
-              <span className="text-sky-500">{request?.userId?.role}</span>
-            </p>
-          </div>
-          <div className="space-x-2">
-            <button
-              onClick={() => handleAccept(request?._id)}
-              className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
+      <h2 className="text-xl font-semibold text-sky-500 mb-4">Role Requests</h2>
+
+      {requests.length === 0 ? (
+        <p className="text-gray-700">No role change requests found.</p>
+      ) : (
+        <ul className="space-y-3">
+          {requests.map((req) => (
+            <li
+              key={req._id}
+              className="bg-sky-50 p-4 rounded-md flex flex-col space-y-3 shadow-sm"
             >
-              Accept
-            </button>
-            <button
-              // onClick={() => handleCancel(request._id)}
-              className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
-            >
-              Cancel
-            </button>
+              <div>
+                <p className="text-gray-700 font-medium">
+                  <span className="text-sky-500">Role:</span> {req?.userId?.role || "N/A"}
+                </p>
+                <p className="text-gray-700">
+                  <span className="text-sky-500">Name:</span> {req?.userId?.name || "N/A"}
+                </p>
+                <p className="text-gray-700">
+                  <span className="text-sky-500">Email:</span> {req?.userId?.email || "N/A"}
+                </p>
+              </div>
+
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => handleAccept(req._id)}
+                  className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition'
+                >
+                  Accept
+                </button>
+                <button
+                  onClick={() => handleCancel(req._id)}
+                  className='px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition '
+                >
+                  Cancel
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="bg-white shadow-md rounded-md p-6 lg:col-span-4">
+        {
+          message.text && (
+            <div
+            className={`p-4 mb-4 rounded-md text-white ${
+              message.type === "success" ? "bg-green-500" : "bg-red-500"
+            }`}
+          >
+            {message.text}
           </div>
-        </li>
-      ))}
-    </ul>
-  </div>
+          )
+        }
+      </div>
+    </div>
   );
 };
 

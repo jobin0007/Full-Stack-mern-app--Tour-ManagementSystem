@@ -1,25 +1,27 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { getUserData, getUserToken } from '../utilities/handleToken'
+
 
 const initialState = {
-  user: null,
-  token: null,
+  user: getUserData() || null,
+  token: getUserToken() || null,
   loading: false,
   error: null,
   message: null
 }
 
 const userSlice = createSlice({
-  name: 'user',
+  name: 'authentication',
   initialState,
   reducers: {
     register: (state, action) => {
       state.user = action.payload.user
       state.token = action.payload.token
     },
-    login: (state, action) => {
+    login: ((state, action) => {
       state.user = action.payload.user
       state.token = action.payload.token
-    }
+    })
 
   }
 })

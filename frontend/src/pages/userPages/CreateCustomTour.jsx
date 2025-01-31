@@ -38,16 +38,16 @@ const { mutateAsync } = useMutation({
       .required("Participants is required"),
   });
 
-//   // Initial form values
-//   const initialValues = {
-//     title: "",
-//     location: "",
-//     description: "",
-//     start_date: "",
-//     end_date: "",
-//     budget: "",
-//     participants: "",
-//   };
+  // Initial form values
+  const initialValues = {
+    title: "",
+    location: "",
+    description: "",
+    start_date: "",
+    end_date: "",
+    budget: "",
+    participants: "",
+  };
 
   // Form submission handler
   const handleSubmit = async(values) => {
@@ -63,7 +63,7 @@ const { mutateAsync } = useMutation({
           Create Custom Tour
         </h1>
         <Formik
-        //   initialValues={initialValues}
+          initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >

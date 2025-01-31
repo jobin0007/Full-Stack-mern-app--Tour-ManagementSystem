@@ -7,7 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { registerAPI } from "../../services/userServices";
 import Cookies from "js-cookie";
-import {jwtDecode} from "jwt-decode";
+import {jwtDecode }from "jwt-decode"; // Correct import
 import { register } from "../../redux/userSlice";
 
 const Register = () => {
@@ -20,14 +20,18 @@ const Register = () => {
     mutationFn: registerAPI,
     onError: (error) => {
       setErrorMessage(
-        error.response?.data?.error || "An Unexpected Error Occurred"
+        error.response?.data?.error || "An unexpected error occurred."
       );
     },
     onSuccess: (data) => {
-      Cookies.set("UserData", data?.token);
-      const decoded = jwtDecode(data.token);
-      dispatch(register({ user: decoded, token: data.token }));
-      navigate("/user/login");
+      if (data?.token) {
+        Cookies.set("UserData", data.token);
+        const decoded = jwtDecode(data.token); // Decode token
+        dispatch(register({ user: decoded, token: data.token }));
+        navigate("/user/login"); // Redirect after successful registration
+      } else {
+        setErrorMessage("Registration failed. Please try again.");
+      }
     },
   });
 
@@ -48,7 +52,11 @@ const Register = () => {
 
   const handleSubmit = async (values) => {
     setErrorMessage(null);
-    await mutateAsync(values);
+    try {
+      await mutateAsync(values);
+    } catch (error) {
+      console.error("Error during submission:", error);
+    }
   };
 
   return (
@@ -64,14 +72,12 @@ const Register = () => {
         )}
         <Formik
           initialValues={{
-         
-           
             name: "",
             email: "",
             mobile_number: "",
             address: "",
             password: "",
-            role: "user", // Set default role as "user"
+            role: "user", // Default role as "user"
           }}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
@@ -114,9 +120,12 @@ const Register = () => {
                 />
               </div>
 
-              {/* Mobile Field */}
+              {/* Mobile Number Field */}
               <div>
-                <label htmlFor="mobile" className="block text-gray-700 font-medium">
+                <label
+                  htmlFor="mobile_number"
+                  className="block text-gray-700 font-medium"
+                >
                   Mobile Number
                 </label>
                 <Field
@@ -126,7 +135,7 @@ const Register = () => {
                   className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <ErrorMessage
-                  name="mobile"
+                  name="mobile_number" // Fixed name
                   component="div"
                   className="text-red-500 text-sm"
                 />
@@ -150,39 +159,17 @@ const Register = () => {
                 />
               </div>
 
-              {/* Role Field */}
-              {/* <div>
-                <label htmlFor="role" className="block text-gray-700 font-medium">
-                  Role
-                </label>
-                <Field
-                  as="select"
-                  id="role"
-                  name="role"
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="user">User</option>
-                  <option value="tour-operator">Tour Operator</option>
-                  <option value="admin">Admin</option>
-                </Field>
-                <ErrorMessage
-                  name="role"
-                  component="div"
-                  className="text-red-500 text-sm"
-                />
-              </div> */}
-
               {/* Password Field */}
-              <div className="bg-slate-100 p-2 flex rounded-md">
+              <div className="relative">
                 <Field
                   type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
                   placeholder="Enter Password"
-                  className="w-full h-full outline-none bg-transparent"
+                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <div
-                  className="cursor-pointer ml-2 flex items-center"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
                   onClick={() => setShowPassword((prev) => !prev)}
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}

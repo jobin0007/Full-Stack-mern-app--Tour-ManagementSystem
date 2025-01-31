@@ -46,7 +46,16 @@ const tourScehma = new mongoose.Schema({
         type:String,
         enum: ['booked', 'not-booked'],
         default:'not-booked'
-    }
+    },
+    coverImage: {
+        type: String, // Store the file path in MongoDB
+        required: true
+    },
+    galleryImages: [{
+        type: String, // Store an array of file paths
+        required: true
+    }]
+
 
 }, { timestamps: true })
 

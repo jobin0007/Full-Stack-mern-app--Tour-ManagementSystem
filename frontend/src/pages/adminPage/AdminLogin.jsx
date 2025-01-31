@@ -27,8 +27,9 @@ const AdminLogin = () => {
     onSuccess: (data) => {
       Cookies.set("AdminData", data?.token);
       const decoded = jwtDecode(data.token);
+      const adminId= decoded?.adminId
       dispatch(login({ admin: decoded, token: data.token }));
-      navigate("/admin");
+      navigate(`/admin/${adminId}`);
     },
 
   });
@@ -41,7 +42,6 @@ const AdminLogin = () => {
 
   const handleSubmit = async (values) => {
     await mutateAsync(values);
-    console.log("values",values)
   };
 
   return (

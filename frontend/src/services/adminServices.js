@@ -1,7 +1,7 @@
 import axios from "axios";
 import { BASE_URL } from "../utilities/urls";
-import Cookies from "js-cookie";
-import { adminTokenData, getAdminToken } from "../utilities/handleToken";
+
+import {  getAdminToken } from "../utilities/handleToken";
 axios.defaults.withCredentials = true
 
 export const adminLoginAPI = async(data)=>{
@@ -25,22 +25,45 @@ export const getAllRoleRequestsAPI = async()=>{
     return response?.data
     
 }
+
 export const acceptRoleRequestAPI = async (requestId ) => {
-    const token = getAdminToken();
-  
-  
-    const response = await axios.put(
-      `${BASE_URL}/admin/accept_role_change/${requestId }`,
-   // Empty body if no additional data is sent
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-  
-    return response.data;
-  };
+  const token = getAdminToken();
+
+
+  const response = await axios.put(
+    `${BASE_URL}/admin/accept_role_change/${requestId }`,{},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};
+export const cancelRoleRequestAPI = async(requestId)=>{
+  const token = getAdminToken();
+  const response = await axios.put(`${BASE_URL}/admin/cancel_role_change/${requestId}`,{},{
+    headers:{
+      Authorization:`Bearer ${token}`
+    }
+  });
+  return response?.data
+}
+
+
+
+
+// export const acceptRoleRequestAPI = async (requestId ) => {
+//     const token = getAdminToken();
+//     const response = await axios.put(`${BASE_URL}/admin/accept_role_change/${requestId }`,
+//      {
+      
+//      }
+//     );
+//   console.log("admin-resonse",response);
+//     return response.data;
+//   };
   
 //  export const acceptRoleRequestAPI = async (requestId)=>{
 //      const token = getToken()

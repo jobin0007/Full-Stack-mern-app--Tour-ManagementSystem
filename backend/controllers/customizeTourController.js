@@ -15,7 +15,6 @@ const customizedTourControllers = {
         if (!id) {
             throw new Error('User not Found')
         }
-        console.log(id);
         if (!title || !description ||!location|| !budget || !participants || !start_date || !end_date) {
             throw new Error('Give All Fields')
         }
@@ -52,7 +51,7 @@ const customizedTourControllers = {
         if (!tourOperatorId) {
             throw new Error("Sorry...Tour Operator Not Found.Please Sign In..")
         }
-        const foundTours = await CustomizedTours.find({ status: 'pending' })
+        const foundTours = await CustomizedTours.find({ status: 'pending' }).populate('userId', 'name mobile_number email')
         if (!foundTours) {
             throw new Error('No Customized Tour Requests ')
         }
@@ -85,7 +84,6 @@ const customizedTourControllers = {
             findUsermobile_number,
             findUseremail
         }
-        console.log(findRequestedUser);
         if (!findUserCustomTour) {
             throw new Error("There is no Custom Tour for the given id")
         }

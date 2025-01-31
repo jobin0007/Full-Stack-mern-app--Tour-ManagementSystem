@@ -17,15 +17,15 @@ const paymentController = {
             throw new Error("Authenticaton Failed")
         }
 
-        // Fetch booking details to get the amount
         const booking = await Bookings.findById(bookingId);
         if (!booking) {
             throw new Error("Booking not found")
         }
-        // Create a new order
+    
         const orderPrice = booking.total_price
         const options = {
-            amount: orderPrice,  // amount in smallest currency unit
+         
+            amount: orderPrice,  
             currency: 'INR',
             receipt: `receipt_${bookingId}`
         };
@@ -49,16 +49,16 @@ const paymentController = {
         if (!userId) {
             throw new Error("user not found")
         }
-        const { order_id } = req.body;  // Make sure to send the order_id from Step 1 in the request body
-        const mockPaymentId = 'pay_test_paymentid';  // Mock payment ID for testing
+        const { order_id } = req.body;  
+        const mockPaymentId = 'pay_test_paymentid';  
 
-        // Generate a mock signature
+    
         const secret = process.env.RAZORPAY_KEY_SECRET;
         const generatedSignature = crypto.createHmac('sha256', secret)
             .update(`${order_id}|${mockPaymentId}`)
             .digest('hex');
         console.log(order_id)
-        // Respond with mock data
+     
         res.json({
             success: true,
             razorpay_order_id: order_id,
@@ -75,7 +75,7 @@ const paymentController = {
 
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature,bookingId } = req.body;
         const secret = process.env.RAZORPAY_KEY_SECRET;
-        // Verify signature to ensure payment is authentic
+       
         const generatedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
             .update(`${razorpay_order_id}|${razorpay_payment_id}`)
             .digest('hex');
@@ -85,7 +85,7 @@ const paymentController = {
         console.log("Signature:", signature);
 
         if (generatedSignature === razorpay_signature) {
-            // Save payment details to the database, mark booking as paid
+           
             await Bookings.findByIdAndUpdate(req.body.bookingId, { status: 'paid' });
             res.json({
                 success: true,

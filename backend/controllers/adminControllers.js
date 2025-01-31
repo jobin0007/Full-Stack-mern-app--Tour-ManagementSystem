@@ -92,7 +92,7 @@ const adminControllers = {
             throw new Error("Admin Not Found")
         }
         const requests = await RoleChangeRequest.find({ status: "pending" }).populate('userId', 'name email role')
-        console.log(requests)
+       
         if (!requests) {
             throw new Error("No Pending Requests")
         }
@@ -160,30 +160,21 @@ const adminControllers = {
         await request.save();
         await RoleChangeRequest.findByIdAndDelete(requestId);
 
-        res.json({ message: `Request ${action}d Successfully`, request })
+        res.json({ message: `Request accepted Successfully`, request })
 
     }),
 
     cancelRoleChange: asyncHandler(async (req, res) => {
-
-        // const { action } = req.body
         const { requestId } = req.params
         const adminId = req.admin
         if(!adminId){
             throw new Error("Admin not Found")
            }
-        // if (!action) {
-        //     throw new Error("Please Give Action ")
-        // }
-
         const request = await RoleChangeRequest.findOne({ _id: requestId });
-
         if (!request || request.status !== 'pending') {
             throw new Error("Requests not found or already processed")
         }
-        // if (action !== 'reject') {
-        //     throw new Error("Please Give Correct Action ")
-        // }
+     
         const foundUserById = request.userId
         await Users.findByIdAndUpdate(foundUserById, { role: 'user' })
         await RoleChangeRequest.findByIdAndUpdate(foundUserById, { status: 'Rejected' })

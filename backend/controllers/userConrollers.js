@@ -2,6 +2,7 @@ const asynHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Users = require("../model/userSchema");
+const Bookings = require("../model/bookingsSchema");
 const TourOperator = require("../model/tourOperatorsSchema");
 const Admin = require("../model/adminSchema");
 const RoleChangeRequest = require("../model/roleChangeRequestingSchema");
@@ -57,11 +58,10 @@ const userControllers = {
     if (!email || !password) {
       throw new Error("Please Give Required Fields");
     }
-  const user = await Users.findOne({email})
-  if (!user || !user.role == 'user') {
-    throw new Error("Sorry...User Not Found")
-
-}
+    const user = await Users.findOne({ email });
+    if (!user || !user.role == "user") {
+      throw new Error("Sorry...User Not Found");
+    }
 
     const passwordCheck = await bcrypt.compare(password, user.password);
 
@@ -70,36 +70,34 @@ const userControllers = {
     }
 
     const token = jwt.sign(
-      { userId: user.id, role:user.role },
+      { userId: user.id, role: user.role },
       process.env.PRIVATE_KEY,
       { expiresIn: "4hr" }
     );
-    res.cookie('token', token, {
+    res.cookie("token", token, {
       maxAge: 2 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       secure: false,
-      sameSite: "none"
-  })
+      sameSite: "none",
+    });
 
     res.json({
       message: "Login Successfull",
-      token
+      token,
     });
   }),
   getOneUser: asynHandler(async (req, res) => {
-    const id = req.user
-    if(!id){
-        throw new Error("Authentication failed")
-       }
-    const { userId } = req.params; 
-   
+    const id = req.user;
+    if (!id) {
+      throw new Error("Authentication failed");
+    }
+    const { userId } = req.params;
+
     if (!userId) {
       throw new Error("Please provide the ID of the user");
     }
-  
-  
+
     const userFound = await Users.findById(userId);
-    console.log('userId',userId);
     if (!userFound) {
       throw new Error("User not found");
     }
@@ -154,7 +152,7 @@ const userControllers = {
     res.send("deleted successfully");
   }),
 
-  requestTourOPerator: asynHandler(async (req, res) => {
+  requestTourOperator: asynHandler(async (req, res) => {
     const userId = req.user;
     const existingRequest = await RoleChangeRequest.findOne(
       { userId },
@@ -177,6 +175,24 @@ const userControllers = {
     res.json({
       message: "Role change request submitted successfully.",
       request: newRequest,
+    });
+  }),
+  getTourStatus: asynHandler(async (req, res) => {
+    const userId = req.user;
+    if (!userId) {
+      throw new Errror("Authentication Failed");
+    }
+
+    const bookings = await Bookings.find({ userId }).select("booking_status");
+
+    if (!bookings || bookings.length === 0) {
+      throw new Error("No Bookings Found");
+    }
+
+    const status = bookings.map((booking) => booking.booking_status);
+    res.json({
+      message: "Booking Status:",
+      status,
     });
   }),
 };

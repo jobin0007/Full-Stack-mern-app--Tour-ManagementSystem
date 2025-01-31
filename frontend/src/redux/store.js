@@ -10,10 +10,9 @@ import tourOperatorReducer from './tourOperatoSlice'
 
 const store = configureStore({
   reducer: {
+    
     user: userReducer,
     admin:adminReducer,
-    tours:tourReducer,
-    request:requestReducer,
     tourOperator:tourOperatorReducer
 
   },

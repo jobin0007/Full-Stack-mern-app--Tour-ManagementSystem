@@ -1,271 +1,199 @@
 import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { FaUserEdit, FaBook, FaTrashAlt, FaBars, FaUserCircle } from "react-icons/fa";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import Banner from '../../components/Banner'
+import {
+  AiOutlineCheck,
+  AiOutlineClose,
+  AiOutlineHome,
+  AiOutlineFileText,
+  AiOutlineCalendar,
+  AiOutlineUser,
+  AiOutlineDollarCircle,
+  AiOutlineMenu,
+} from "react-icons/ai";
+import {
+  FaUserEdit,
+  FaBook,
+  FaTrashAlt,
+  FaBars,
+  FaUserCircle,
+} from "react-icons/fa";
 import { MdCreateNewFolder } from "react-icons/md";
-import { getOneUserAPI } from "../../services/userServices";
+import {
+  getBookingStatusAPI,
+  getOneUserAPI,
+  operatorRequestAPI,
+} from "../../services/userServices";
+import { IoHome } from "react-icons/io5";
 import Tours from "../tours";
 import Search from "../../components/Search";
+import Header from '../../components/Header'
 
 const UserDashboard = () => {
   const { id: userId } = useParams();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
+
+  const [message, setMessage] = useState({ text: "", type: "" });
+  const [filters, setFilters] = useState({});  // Store search filters
+
+  // Update filters when user searches
+  const handleSearch = (filterData) => {
+    setFilters(filterData);
+  };
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["user", userId],
     queryFn: () => getOneUserAPI(userId),
+    onError: (err) =>
+      setMessage({ text: "Failed to load user data.", type: "error" }),
   });
 
-  // State to manage sidebar visibility on small screens
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const {
+    data: bookingResponse
+  } = useQuery({
+    queryKey: ["bookingData"],
+    queryFn: getBookingStatusAPI,
+  });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div className="text-red-500">Error: {error.message}</div>;
+  const bookingStatuses = bookingResponse?.status || [];
+  const hasBookings = bookingStatuses.length > 0;
+
+  const { mutateAsync, isLoading: isMutationLoading } = useMutation({
+    mutationFn: operatorRequestAPI,
+    onSuccess: (response) => {
+      setMessage({ text: response.message, type: "success" });
+    },
+    onError: (err) => {
+      setMessage({
+        text: err.response?.data?.message || "Something went wrong.",
+        type: "error",
+      });
+    },
+  });
+
+  const handleRoleChangeRequest = async () => {
+    setMessage({ text: "", type: "" });
+    await mutateAsync();
+  };
+
+  if (isLoading) return <div className="text-center py-6">Loading...</div>;
+  if (error)
+    return (
+      <div className="text-red-500 text-center py-6">
+        Error: {error.message}
+      </div>
+    );
 
   const { userFound } = data;
 
-  const deleteTour = (id) => {
-    console.log(`Tour with ID ${id} deleted`);
-  };
-
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-800">
-      <div className="max-w-7xl mx-auto px-4 py-6 grid lg:grid-cols-5 gap-4">
-        {/* Left Sidebar */}
-        <div
-          className={`bg-white shadow-md rounded-md p-4 lg:col-span-1 transition-transform ${
-            isSidebarOpen ? "block" : "hidden lg:block"
-          }`}
+    <div className="min-h-screen bg-white text-gray-800 p-3">
+     <div className="grid grid-cols-2 sm:grid-cols-4 items-center bg-white px-4 py-3 shadow-md">
+        <button
+          onClick={() => setShowSidebar(true)}
+          className="text-gray-700 text-2xl"
         >
-          
-            <FaUserCircle className="text-indigo-500 text-4xl mx-auto" />
-            <h1 className="text-2xl font-bold mb-4">
-            Welcome, <span className="text-indigo-500">{userFound.name}</span>
-          </h1>
-              
-          <h2 className="text-lg font-semibold mb-4">Menu</h2>
-          <ul className="space-y-3">
+          <AiOutlineMenu />
+        </button>
+        <div className="flex col-span-3 justify-end gap-2">
+          <AiOutlineHome className="text-gray-700 xs:text-xs  sm:text-xs lg:text-lg" />
+          <span className=" xs:text-xs  sm:text-xs lg:text-lg ">Support</span>
+          <div className="flex items-center gap-2">
+            <AiOutlineUser className="text-gray-700  xs:text-xs  sm:text-xs lg:text-lg" />
+            <span className=" xs:text-xs  sm:text-xs lg:text-lg ">{userFound?.name}</span>
+          </div>
+        </div>
+      </div>
+     
+      {/* <Header /> */}
+      <div className=" p-4 bg-white">
+     
+      </div>
+  
+      <div className="max-w-full mx-auto px-4 py-6 grid lg:grid-cols-4 gap-4">
+        {
+          showSidebar && (
+            <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex">
+            <div className="bg-white w-3/4 max-w-xs p-4 flex flex-col">
+              <button
+                onClick={() => setShowSidebar(false)}
+                className="ml-auto text-gray-700 text-xl"
+              >
+                <AiOutlineClose />
+              </button>
+              <ul className="space-y-3">
             <li className="flex items-center gap-2 text-sm hover:text-indigo-600 cursor-pointer transition duration-200">
               <FaUserEdit /> Update Profile
             </li>
             <li className="flex items-center gap-2 text-sm hover:text-indigo-600 cursor-pointer transition duration-200">
               <FaUserEdit /> Edit Contact Details
             </li>
-            <li className="flex items-center gap-2 text-sm hover:text-indigo-600 cursor-pointer transition duration-200">
-              <FaBook /> View Booked Tours
-            </li>
-            <Link to={`/user/${userFound?._id}/create-custom-tour`} 
-            className="flex items-center gap-2 text-sm hover:text-indigo-600 cursor-pointer transition duration-200"
-            >
-           
-              <MdCreateNewFolder /> Customize Your Tours
-         
+            <Link
+            to={`/user/${userFound?._id}/view-Bookings`}
+            className="flex items-center gap-2 text-sm hover:text-indigo-600 cursor-pointer transition duration-200">
+              <FaBook />  Status of Booked Tour
             </Link>
-            <li className="mt-6 text-sm text-indigo-500 underline cursor-pointer hover:text-indigo-700 transition duration-200">
-              Request Role Change to Tour Operator
-            </li>
+            <Link
+              to={`/user/${userFound?._id}/create-custom-tour`}
+              className="flex items-center gap-2 text-sm hover:text-indigo-600 cursor-pointer transition duration-200"
+              
+            >
+              <MdCreateNewFolder /> Customize Your Tours
+            </Link>
+{/* 
+            {hasBookings && (
+              <div>
+                <h2 className="font-bold text-lg">Booking Status:</h2>
+                {bookingStatuses.map((status, index) => (
+                  <p key={index} className="text-gray-700">
+                    <span className="font-medium">Status:</span> {status}
+                  </p>
+                ))}
+              </div>
+            )} */}
+
+            <button
+              className="mt-6 text-sm text-indigo-500 underline cursor-pointer hover:text-indigo-700 transition duration-200"
+              onClick={handleRoleChangeRequest}
+              disabled={isMutationLoading}
+            >
+              {isMutationLoading
+                ? "Processing..."
+                : "Request Role Change to Tour Operator"}
+            </button>
           </ul>
-        </div>
+            </div>
+          </div>
+  
 
-        {/* Toggle Button for Small Screens */}
-        <button
-          className="lg:hidden text-xl p-2 rounded-md text-gray-600"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        >
-          <FaBars />
-        </button>
+          )
+        }
+      
+        <div className=" p-6 lg:col-span-4">
+          {message.text && (
+            <div
+              className={`p-4 mb-4 rounded-md text-white ${
+                message.type === "success" ? "bg-green-500" : "bg-red-500"
+              }`}
+            >
+              {message.text}
+            </div>
+          )}
 
-        {/* Middle Content */}
-        <div className="bg-white shadow-md rounded-md p-6 lg:col-span-4">
-        
-        
-          <Search/>
-          <Tours userData={userFound}/>
+{/* <FaUserCircle className="text-indigo-500 text-4xl text-right" /> */}
+          {/* <h1 className="text-2xl font-bold mb-4 ">
+            Welcome, <span className="text-indigo-500">{userFound?.name}</span>
+          </h1> */}
+             <Search onSearch={handleSearch} />
+          <Tours userData={userFound} filters={filters} />
         </div>
       </div>
+      <Banner />
     </div>
+    
   );
 };
 
 export default UserDashboard;
-// import React, { useState } from "react";
-// import { FaUserCircle, FaUserEdit, FaBook, FaTrashAlt, FaBars } from "react-icons/fa";
-// import { useParams } from "react-router-dom";
-// import { useQuery } from "@tanstack/react-query";
-// import { getOneUserAPI } from "../../services/userServices";
-// import Tours from "../tours"; // Assuming you have a separate component for showing tours
-
-// const UserDashboard = () => {
-//   const { id: userId } = useParams();
-//   const { data, isLoading, error } = useQuery({
-//     queryKey: ["user", userId],
-//     queryFn: () => getOneUserAPI(userId),
-//   });
-
-//   // State to manage the sidebar visibility
-//   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-//   // State for tracking number of bookings
-//   const [bookingCount, setBookingCount] = useState(0);
-
-//   if (isLoading) return <div>Loading...</div>;
-//   if (error) return <div className="text-red-500">Error: {error.message}</div>;
-
-//   const { userFound } = data;
-
-//   // Function to handle booking
-//   const handleBookTour = () => {
-//     setBookingCount(bookingCount + 1); // Increase the booking count when the "Book" button is clicked
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gray-100 text-gray-800">
-//       <div className="max-w-7xl mx-auto px-4 py-6 grid lg:grid-cols-5 gap-4">
-
-//         {/* Left Sidebar */}
-//         <div
-//           className={`bg-white shadow-md rounded-md p-4 lg:col-span-1 transition-all transform ${
-//             isSidebarOpen ? "block" : "hidden lg:block"
-//           }`}
-//         >
-//           <h2 className="text-lg font-semibold mb-4">User Info</h2>
-//           <div className="flex items-center gap-4 mb-6">
-//             <FaUserCircle className="text-indigo-500 text-4xl" />
-//             <div>
-//               <h3 className="font-bold text-xl">{userFound.name}</h3>
-//               <p className="text-sm text-gray-600">{userFound.role}</p>
-//             </div>
-          
-
-            
-//           </div>
-
-//           <div className="flex items-center gap-2 mb-4">
-//             <FaBook className="text-indigo-500 text-3xl" />
-//             <div>
-//               <h4 className="text-lg font-semibold">Bookings</h4>
-//               <span className="text-xl font-bold">{bookingCount}</span>
-//             </div>
-//           </div>
-//           {/* <button
-//             onClick={handleBookTour}
-//             className="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition"
-//           >
-//             Book
-//           </button> */}
-       
-
-//           <h3 className="text-lg font-semibold">Duties</h3>
-//           <ul className="space-y-3">
-//             <li className="flex items-center gap-2 text-sm">
-//               <FaUserEdit className="text-indigo-600" /> Update Profile
-//             </li>
-//             <li className="flex items-center gap-2 text-sm">
-//               <FaUserEdit className="text-indigo-600" /> Edit Contact Details
-//             </li>
-//             <li className="flex items-center gap-2 text-sm">
-//               <FaBook className="text-indigo-600" /> View Booked Tours
-//             </li>
-//             <li className="mt-6 text-sm text-indigo-500 underline cursor-pointer hover:text-indigo-700">
-//               Request Role Change to Tour Operator
-//             </li>
-//           </ul>
-//         </div>
-
-//         {/* Toggle Button for Small Screens */}
-//         <button
-//           className="lg:hidden text-xl p-2 rounded-md text-gray-600"
-//           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-//         >
-//           <FaBars />
-//         </button>
-
-//         {/* Top Header with Booking Info */}
-       
-
-//         {/* Right Section: Tours */}
-//         <div className="bg-white shadow-md rounded-md p-6 lg:col-span-3">
-//           <h1 className="text-2xl font-bold mb-4">
-//             Welcome, <span className="text-indigo-500">{userFound.name}</span>
-//           </h1>
-//           <h2 className="text-lg font-semibold mb-4">Booked Tours</h2>
-//           <Tours  userDetails={userFound} /> {/* The Tours component will display the user's tours */}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default UserDashboard;
-// import React, { useState } from "react";
-// import { useParams } from "react-router-dom";
-// import { useQuery } from "@tanstack/react-query";
-// import { FaUserCircle, FaBook, FaBars } from "react-icons/fa";
-// import { getOneUserAPI } from "../../services/userServices";
-// import Tours from "../tours";
-// import Toast from "./Toast";
-// // Importing Toast for messages
-
-// const UserDashboard = () => {
-// const { id: userId } = useParams();
-// const { data, isLoading, error } = useQuery({
-//   queryKey: ["user", userId],
-//   queryFn: () => getOneUserAPI(userId),
-// });
-
-//   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-//   const [bookingCount, setBookingCount] = useState(0);
-//   const [toastMessage, setToastMessage] = useState(null); // For displaying toast messages
-
-//   if (isLoading) return <div>Loading...</div>;
-//   if (error) return <div className="text-red-500">Error: {error.message}</div>;
-
-//   const { userFound } = data;
-
-//   const handleBookingSuccess = () => {
-//     setBookingCount(bookingCount + 1);
-//     setToastMessage("Tour booked successfully!");
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gray-100 text-gray-800">
-//       <div className="max-w-7xl mx-auto px-4 py-6 grid lg:grid-cols-5 gap-4">
-//         {/* Sidebar */}
-//         <div className={`bg-white shadow-md p-4 lg:col-span-1 ${isSidebarOpen ? "block" : "hidden lg:block"}`}>
-//           <h2 className="text-lg font-semibold mb-4">User Info</h2>
-//           <div className="flex items-center gap-4 mb-6">
-//             <FaUserCircle className="text-indigo-500 text-4xl" />
-//             <div>
-//               <h3 className="font-bold text-xl">{userFound.name}</h3>
-//               <p className="text-sm text-gray-600">{userFound.role}</p>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Booking Info */}
-//         <div className="bg-white shadow-md p-4 lg:col-span-1 flex items-center justify-between">
-//           <div className="flex items-center gap-2">
-//             <FaBook className="text-indigo-500 text-3xl" />
-//             <div>
-//               <h4 className="text-lg font-semibold">Bookings</h4>
-//               <span className="text-xl font-bold">{bookingCount}</span>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Tours Section */}
-//         <div className="bg-white shadow-md p-6 lg:col-span-3">
-//           <h1 className="text-2xl font-bold mb-4">
-//             Welcome, <span className="text-indigo-500">{userFound.name}</span>
-//           </h1>
-//           <Tours userDetails={userFound} onBookingSuccess={handleBookingSuccess} />
-//         </div>
-//       </div>
-
-//       {/* Toast Message */}
-//       {toastMessage && <Toast message={toastMessage} onClose={() => setToastMessage(null)} />} 
-//     </div>
-//   );
-// };
-
-// export default UserDashboard;
-
-
