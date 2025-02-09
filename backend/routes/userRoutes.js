@@ -5,6 +5,7 @@ const userRoutes = express.Router()
 
 userRoutes.post('/register',userControllers.register)
 userRoutes.post('/login',userControllers.login)
+userRoutes.post('/logout',userControllers.logout)
 userRoutes.get('/getoneuser/:userId',authentication,userControllers.getOneUser)
 userRoutes.put('/update',authentication,userControllers.updateMobileNumber)
 userRoutes.delete('/delete',authentication,userControllers.deleteUser)

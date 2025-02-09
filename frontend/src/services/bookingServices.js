@@ -3,12 +3,12 @@ import { getTourOperatorData, getTourOperatorToken, getUserData, getUserToken } 
 import { BASE_URL } from "../utilities/urls"
 
 
-  export const createBookingAPI = async (tourId, bookingDetails) => {
+  export const createBookingAPI = async (tourId) => {
     const token = getUserToken();
-    const { start_date, end_date } = bookingDetails;
+    // const { start_date, end_date } = bookingDetails;
   
     const response = await axios.put(
-      `${BASE_URL}/bookings/create_booking/${tourId}`,{ start_date, end_date},
+      `${BASE_URL}/bookings/create_booking/${tourId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

@@ -7,13 +7,13 @@ const bookingController = {
   createBooking: asyncHandler(async (req, res) => {
     const id = req.user;
     const { foundTourId } = req.params;
-    const { start_date, end_date } = req.body;
+    // const { start_date, end_date } = req.body;
     if (!id) {
       throw new Error("Authentication failed");
     }
-    if (!start_date || !end_date) {
-      throw new Error("Please Give All Fields");
-    }
+    // if (!start_date || !end_date) {
+    //   throw new Error("Please Give All Fields");
+    // }
 
     const foundTour = await Tour.findOne({ _id: foundTourId });
 
@@ -46,8 +46,8 @@ const bookingController = {
       userId: id,
       userName: userDetail.name,
       userMobileNumber: userDetail.mobile_number,
-      start_date,
-      end_date,
+      // start_date,
+      // end_date,
       total_price: foundPrice,
     });
 

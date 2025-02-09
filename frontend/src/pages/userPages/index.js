@@ -11,6 +11,7 @@ import {
   AiOutlineUser,
   AiOutlineDollarCircle,
   AiOutlineMenu,
+  AiOutlineLogout,
 } from "react-icons/ai";
 import {
   FaUserEdit,
@@ -89,8 +90,8 @@ const UserDashboard = () => {
   const { userFound } = data;
 
   return (
-    <div className="min-h-screen bg-white text-gray-800 p-3">
-     <div className="grid grid-cols-2 sm:grid-cols-4 items-center bg-white px-4 py-3 shadow-md">
+    <div className="min-h-screen bg-[#F9F9F9] text-gray-800 p-3">
+     <div className="grid grid-cols-2 sm:grid-cols-4 items-center  px-4 py-3 shadow-md">
         <button
           onClick={() => setShowSidebar(true)}
           className="text-gray-700 text-2xl"
@@ -98,8 +99,11 @@ const UserDashboard = () => {
           <AiOutlineMenu />
         </button>
         <div className="flex col-span-3 justify-end gap-2">
-          <AiOutlineHome className="text-gray-700 xs:text-xs  sm:text-xs lg:text-lg" />
-          <span className=" xs:text-xs  sm:text-xs lg:text-lg ">Support</span>
+          <AiOutlineHome className="text-gray-700  xs:text-xs  sm:text-xs lg:text-lg" />
+          <span className=" xs:text-xs  sm:text-xs lg:text-lg ">Home</span>
+          <button className="flex items-center gap-2 text-red-600 hover:text-red-800">
+            <AiOutlineLogout className="text-lg" /> Logout
+          </button>
           <div className="flex items-center gap-2">
             <AiOutlineUser className="text-gray-700  xs:text-xs  sm:text-xs lg:text-lg" />
             <span className=" xs:text-xs  sm:text-xs lg:text-lg ">{userFound?.name}</span>
@@ -108,14 +112,14 @@ const UserDashboard = () => {
       </div>
      
       {/* <Header /> */}
-      <div className=" p-4 bg-white">
+      <div className=" p-4 ">
      
       </div>
   
-      <div className="max-w-full mx-auto px-4 py-6 grid lg:grid-cols-4 gap-4">
+      <div className="max-w-full  mx-auto px-4 py-6 grid lg:grid-cols-4 gap-4">
         {
           showSidebar && (
-            <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex">
+            <div className="fixed inset-0 z-50 bg-black  bg-opacity-50 flex">
             <div className="bg-white w-3/4 max-w-xs p-4 flex flex-col">
               <button
                 onClick={() => setShowSidebar(false)}

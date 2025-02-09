@@ -15,24 +15,27 @@ import CreateCustomTour from "./pages/userPages/CreateCustomTour";
 import Viewebookings from "./pages/userPages/Viewebookings";
 import VIewAcceptedTours from "./pages/tourOperator/VIewAcceptedTours";
 import { useSelector } from "react-redux";
+import RoleRequests from "./pages/adminPage/RoleRequests";
+import NotFound from "./NotFound";
+import GetAllUsers from "./pages/adminPage/GetAllUsers";
+import GetAllTourOperators from "./pages/adminPage/GetAllTourOperators";
 
 function App() {
   const user = useSelector((state) => state.user);
-
   const admin = useSelector((state) => state.admin);
   const tourOperator = useSelector((state) => state.tourOperator);
 
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes */}
+    
         <Route path="/" element={<Home />} />
         <Route path="/user/login" element={<UserLogin />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/user/register" element={<Register />} />
         <Route path="/tour-operator/login" element={<TourOperatorLogin />} />
 
-        {/* Protected Routes for Users */}
+      
         {user && (
           <>
             <Route path="/user/:id" element={<UserDashBoard />} />
@@ -41,10 +44,18 @@ function App() {
           </>
         )}
 
-        {/* Protected Route for Admin */}
-        {admin && <Route path="/admin/:id" element={<AdminDashBoard />} />}
+       
+        {admin && (
+          <>
+            <Route path="/admin/:id" element={<AdminDashBoard />} />
+            <Route path="/admin/:id/role-requset" element={<RoleRequests />} />
+            <Route path="/admin/:id/get-All-users" element={<GetAllUsers />} />
+            <Route path="/admin/:id/get-All-tour-operators" element={<GetAllTourOperators />} />
 
-        {/* Protected Routes for Tour Operators */}
+          </>
+        )}
+
+      
         {tourOperator && (
           <>
             <Route path="/tour-operator/:tourOperatorId" element={<TourOperatorDashBoard />} />
@@ -53,8 +64,11 @@ function App() {
           </>
         )}
 
-        {/* Catch-all Route */}
-        <Route path="/*" element={<Home />} />
+        {!user && !tourOperator && !admin && (
+          <Route path="/*" element={<NotFound />} />
+        )}
+
+        <Route path="/*" element={<NotFound />} />
       </Routes>
 
       <Footer />

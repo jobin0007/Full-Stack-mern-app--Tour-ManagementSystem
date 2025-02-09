@@ -86,6 +86,17 @@ const userControllers = {
       token,
     });
   }),
+  logout: asynHandler(async (req, res) => {
+  
+    res.clearCookie("userData", { httpOnly: true, sameSite: "none", secure: false });
+    res.clearCookie("token", { httpOnly: true, sameSite: "none", secure: false });
+    
+  
+  
+    res.json({
+      message: "Logged out successfully",
+    });
+  }),
   getOneUser: asynHandler(async (req, res) => {
     const id = req.user;
     if (!id) {

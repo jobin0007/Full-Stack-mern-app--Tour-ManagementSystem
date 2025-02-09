@@ -85,6 +85,61 @@ const adminControllers = {
         })
     }
     ),
+    getOneAdmin: asyncHandler(async (req, res) => {
+        const id = req.admin;
+        if (!id) {
+          throw new Error("Authentication failed");
+        }
+        const { adminId } = req.params;
+    
+        if (!adminId) {
+          throw new Error("Please provide the ID of the admin");
+        }
+    
+        const adminFound = await Admin.findById(adminId);
+        if (!adminFound) {
+          throw new Error("Admin not found");
+        }
+        res.json({
+          message: "Admin found Successfully ",
+          adminFound,
+        });
+      }),
+getAllUsers:asyncHandler(async(req,res)=>{
+    const id = req.admin
+    if(!id){
+        throw new Error("Authentication failed")
+    }
+    const allUsers= await Users.find({role:'user'})
+    if(!allUsers){
+        throw new Error("No users found")
+    }
+    res.json({
+        message:'users Found successfully',
+        allUsers
+      
+    })
+}
+
+),
+getAllTourOperators:asyncHandler(async(req,res)=>{
+    const id = req.admin
+    if(!id){
+        throw new Error("Authentication failed")
+    }
+    const allOperators= await TourOperator.find({role:'tour-operator'})
+    if(!allOperators){
+        throw new Error("No Tour Operators found")
+    }
+    res.json({
+        message:'Tour-operators Found successfully',
+        allOperators
+      
+    })
+}
+
+),
+
     getRoleRequest: asyncHandler(async (req, res) => {
         const id = req.admin
 

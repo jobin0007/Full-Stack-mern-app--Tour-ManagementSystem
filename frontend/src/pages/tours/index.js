@@ -693,7 +693,7 @@
 
 // export default Tours;
 import React, { useEffect, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { searchToursAPI } from "../../services/tourServices";
 import { createBookingAPI } from "../../services/bookingServices";
 import { Formik, Form, Field } from "formik";
@@ -701,6 +701,8 @@ import { AiOutlineClose } from "react-icons/ai";
 import * as Yup from "yup";
 
 const Tours = ({ userData, filters }) => {
+  const queryClient = useQueryClient(); // Hook to interact with React Query cache
+
   const [errorMessage, setErrorMessage] = useState(null);
   const [selectedTourId, setSelectedTourId] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -718,11 +720,11 @@ const Tours = ({ userData, filters }) => {
     }
   }, [data]);
 
-  // ✅ Mutation for booking
+ 
   const bookingMutation = useMutation({
     mutationKey: ["bookings"],
-    mutationFn: ({ tourId, start_date, end_date }) =>
-      createBookingAPI(tourId, { start_date, end_date }),
+    mutationFn: ({ tourId }) =>
+      createBookingAPI(tourId),
     onSuccess: () => {
       alert("Booking successful!");
       handleCloseModal();
@@ -759,9 +761,9 @@ const Tours = ({ userData, filters }) => {
     try {
       await bookingMutation.mutateAsync({
         tourId: selectedTourId,
-        start_date: values.start_date,
-        end_date: values.end_date,
       });
+      queryClient.invalidateQueries(["searchTours"]);
+
     } catch (error) {
       setErrorMessage(error?.response?.data?.error || "Booking failed");
     }

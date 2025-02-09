@@ -67,7 +67,7 @@ const Search = ({ onSearch }) => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row justify-center items-center gap-4 p-6 bg-white">
+    <div className="flex flex-col md:flex-row justify-center items-center gap-4 p-6 ">
       <div className="w-full md:w-1/4">
         <label className="block text-sm font-semibold text-gray-700 mb-1">
           Search Location
@@ -116,7 +116,7 @@ const Search = ({ onSearch }) => {
 <div className="w-44 h-7  flex items-end mt-12">
         <button
           onClick={handleSearch}
-          className="w-full flex items-center justify-center gap-2 border  text-black py-3 px-4 rounded-md hover:bg-gray-800  hover:text-white transition-all duration-200"
+          className="w-full flex items-center justify-center gap-2 border bg-white  text-black py-3 px-4 rounded-md hover:bg-gray-800  hover:text-white transition-all duration-200"
         >
           <AiOutlineSearch size={20} />
           <span>Search</span>

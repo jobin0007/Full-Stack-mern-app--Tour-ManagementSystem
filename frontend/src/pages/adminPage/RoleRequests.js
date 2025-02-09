@@ -64,13 +64,13 @@ const RoleRequests = () => {
   }
 
   const requests = data?.requests || [];
-
+{console.log('requsets',requests)}
   return (
     <div>
-      <h2 className="text-xl font-semibold text-sky-500 mb-4">Role Requests</h2>
+      <h2 className="p-5 text-xl font-semibold text-sky-500 mb-4">Role Requests</h2>
 
       {requests.length === 0 ? (
-        <p className="text-gray-700">No role change requests found.</p>
+        <p className="text-gray-700 p-5 border shadow-md w-1/2 mx-auto">No role change requests found.</p>
       ) : (
         <ul className="space-y-3">
           {requests.map((req) => (

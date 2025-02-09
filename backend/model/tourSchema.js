@@ -26,12 +26,6 @@ const tourScehma = new mongoose.Schema({
         type: String,
         require: true
     },
-    duration: {
-        type: String,
-        require: true,
-        trim: true
-
-    },
     price: {
         type: Number,
         require: true,
@@ -41,6 +35,16 @@ const tourScehma = new mongoose.Schema({
     availableSpots: {
         type: Number,
         required: true
+    }, 
+     start_date: {
+        type: Date,
+        require: true,
+
+    },
+    end_date: {
+        type: Date,
+        require: true,
+
     },
     bookingStatus:{
         type:String,
