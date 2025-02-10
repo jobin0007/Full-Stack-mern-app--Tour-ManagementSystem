@@ -36,7 +36,7 @@ const Home = () => {
             >
               <FaBars />
             </button>
-            <span className="hidden md:block text-sm text-gray-700">
+            <span className="hidden md:block font-vollkorn text-sm text-gray-700">
               Welcome to RêveWelt!
             </span>
 

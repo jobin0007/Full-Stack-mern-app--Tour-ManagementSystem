@@ -44,8 +44,8 @@ const Slideshow = () => {
         <div className="absolute inset-0 bg-black opacity-50 rounded-lg"></div>
         <div className="absolute inset-0 flex items-center justify-center text-center text-white">
           <div className="space-y-4 px-6 sm:px-12 md:px-24">
-            <h2 className="text-3xl md:text-4xl font-bold">{slides[currentSlide].title}</h2>
-            <p className="text-lg md:text-xl">{slides[currentSlide].description}</p>
+            <h2 className="text-3xl md:text-4xl font-bold font-luxurious">{slides[currentSlide].title}</h2>
+            <p className="text-lg md:text-xl font-vollkorn">{slides[currentSlide].description}</p>
             <button className="mt-6 px-8 py-3 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition duration-300">
               Book Now
             </button>
@@ -61,7 +61,7 @@ const Slideshow = () => {
           }
           className=" text-white p-2  "
         >
-      <MdOutlineKeyboardArrowLeft className="text-white mr-2" size={70} />
+      <MdOutlineKeyboardArrowLeft className="text-gray-500  mr-1" size={70} />
         </button>
         <button
           onClick={() =>
@@ -69,7 +69,7 @@ const Slideshow = () => {
           }
           className=" text-white p-2 "
         >
-      <MdKeyboardArrowRight className="text-white mr-2" size={70} />
+      <MdKeyboardArrowRight className="text-gray-500   mr-1" size={70} />
         </button>
       </div>
     </div>

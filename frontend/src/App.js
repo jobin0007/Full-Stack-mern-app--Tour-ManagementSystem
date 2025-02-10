@@ -19,6 +19,7 @@ import RoleRequests from "./pages/adminPage/RoleRequests";
 import NotFound from "./NotFound";
 import GetAllUsers from "./pages/adminPage/GetAllUsers";
 import GetAllTourOperators from "./pages/adminPage/GetAllTourOperators";
+import Tours from "./pages/tours";
 
 function App() {
   const user = useSelector((state) => state.user);
@@ -34,6 +35,7 @@ function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/user/register" element={<Register />} />
         <Route path="/tour-operator/login" element={<TourOperatorLogin />} />
+        <Route path="/tours" element={<Tours/>}/>
 
       
         {user && (

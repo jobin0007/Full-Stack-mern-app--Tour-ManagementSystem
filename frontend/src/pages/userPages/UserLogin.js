@@ -124,7 +124,7 @@ const UserLogin = () => {
             Don&#39;t have an account?{' '}
             <Link
               className="hover:text-cyan-500 hover:underline"
-              to={'/register'}
+              to={'/user/register'}
             >
               Create New Account
             </Link>
