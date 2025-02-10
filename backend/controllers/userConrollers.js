@@ -80,10 +80,11 @@ const userControllers = {
       secure: false,
       sameSite: "none",
     });
-
+     
     res.json({
       message: "Login Successfull",
       token,
+    
     });
   }),
   logout: asynHandler(async (req, res) => {

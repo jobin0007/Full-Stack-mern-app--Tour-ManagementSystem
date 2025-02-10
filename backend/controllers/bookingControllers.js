@@ -4,64 +4,123 @@ const Bookings = require("../model/bookingsSchema");
 const tourOperatorRoutes = require("../routes/tourOperatorRoutes");
 const Users = require("../model/userSchema");
 const bookingController = {
-  createBooking: asyncHandler(async (req, res) => {
-    const id = req.user;
+
+createBooking : asyncHandler(async (req, res) => {
     const { foundTourId } = req.params;
-    // const { start_date, end_date } = req.body;
-    if (!id) {
-      throw new Error("Authentication failed");
+    const userId = req.user // Ensure we get the user ID correctly
+  
+    if (!userId) {
+      return res.status(401).json({ error: "Authentication failed" });
     }
-    // if (!start_date || !end_date) {
-    //   throw new Error("Please Give All Fields");
-    // }
-
-    const foundTour = await Tour.findOne({ _id: foundTourId });
-
+  
+    // Find the tour
+    const foundTour = await Tour.findById(foundTourId);
     if (!foundTour) {
-      throw new Error("No Tours Available Now");
+      return res.status(404).json({ error: "No Tours Available Now" });
     }
-
-    const foundTourOperatorId = foundTour.tourOperatorId;
-
-    const foundPrice = foundTour.price;
-
-    if (
-      foundTour.bookingStatus !== "not-booked" &&
-      foundTour.status !== "active"
-    ) {
-      throw new Error("Tour Already Booked .Otherwise It Is Not Active Now");
+  
+    // Check tour booking status
+    if (foundTour.bookingStatus === "booked" || foundTour.status !== "active") {
+      return res
+        .status(400)
+        .json({ error: "Tour Already Booked or Not Active Now" });
     }
-    const existingTourRequest = await Bookings.findOne({ userId: id });
-
+  
+    // Check if user already has a pending booking
+    const existingTourRequest = await Bookings.findOne({ userId });
     if (existingTourRequest) {
-      throw new Error(
-        "You Have Already A Pending Tour Request. Please Try After Cancel It"
-      );
+      return res.status(400).json({
+        error:
+          "You Have Already A Pending Tour Request. Please Cancel It Before Booking Again",
+      });
     }
-
-    const userDetail = await Users.findById(id);
+  
+    // Get user details
+    const userDetail = await Users.findById(userId);
+    if (!userDetail) {
+      return res.status(404).json({ error: "User not found" });
+    }
+  
+    // Create booking
     const createBooking = await Bookings.create({
       tourId: foundTourId,
-      tourOperatorId: foundTourOperatorId,
-      userId: id,
+      tourOperatorId: foundTour.tourOperatorId,
+      userId,
       userName: userDetail.name,
       userMobileNumber: userDetail.mobile_number,
-      // start_date,
-      // end_date,
-      total_price: foundPrice,
+      total_price: foundTour.price,
     });
-
-    await Tour.findByIdAndUpdate(foundTourId, { bookingStatus: "booked" });
-    await Tour.findByIdAndUpdate(foundTourId, { status: "inactive" });
+  
     if (!createBooking) {
-      throw new Error(" Tour not Booked");
+      return res.status(500).json({ error: "Tour Booking Failed" });
     }
-
+  
+    // Update tour status only after booking creation is successful
+    await Tour.findByIdAndUpdate(foundTourId, {
+      bookingStatus: "booked",
+      status: "inactive",
+    });
+  
     res.json({
-      message: "Tour Booked ",
-      createBooking,
+      message: "Tour Booked Successfully",
+      booking: createBooking,
     });
   }),
+
+  // createBooking: asyncHandler(async (req, res) => {
+  //   const { foundTourId } = req.params;
+  //   const id = req.user
+    
+  //   if (!id) {
+  //     throw new Error("Authentication failed");
+  //   }
+   
+
+  //   const foundTour = await Tour.findOne({ _id: foundTourId });
+
+  //   if (!foundTour) {
+  //     throw new Error("No Tours Available Now");
+  //   }
+
+  //   const foundTourOperatorId = foundTour.tourOperatorId;
+
+  //   const foundPrice = foundTour.price;
+
+  //   if (
+  //     foundTour.bookingStatus !== "not-booked" &&
+  //     foundTour.status !== "active"
+  //   ) {
+  //     throw new Error("Tour Already Booked .Otherwise It Is Not Active Now");
+  //   }
+  //   const existingTourRequest = await Bookings.findOne({ userId: id });
+
+  //   if (existingTourRequest) {
+  //     throw new Error(
+  //       "You Have Already A Pending Tour Request. Please Try After Cancel It"
+  //     );
+  //   }
+
+  //   const userDetail = await Users.findById(id);
+  //   const createBooking = await Bookings.create({
+  //     tourId: foundTourId,
+  //     tourOperatorId: foundTourOperatorId,
+  //     userId: id,
+  //     userName: userDetail.name,
+  //     userMobileNumber: userDetail.mobile_number,
+  //     total_price: foundPrice,
+  //   });
+
+  //   await Tour.findByIdAndUpdate(foundTourId, { bookingStatus: "booked" });
+  //   await Tour.findByIdAndUpdate(foundTourId, { status: "inactive" });
+  //   if (!createBooking) {
+  //     throw new Error(" Tour not Booked");
+  //   }
+
+  //   res.json({
+  //     message: "Tour Booked ",
+  //     createBooking,
+  //   });
+  // }),
   getAllBooking: asyncHandler(async (req, res) => {
     const tourOperatorId = req.tourOperator; // Extract tourOperatorId from request
 
