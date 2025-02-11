@@ -19,6 +19,13 @@ export const loginAPI=async(data)=>{
 
   return response?.data
 }  
+
+
+export const userLogOutAPI = async()=>{
+  const response = await axios.post(`${BASE_URL}/user/logout`)
+  return response?.data
+
+}
 // const token= getAdminToken()
 // console.log(token);
 // const response = await axios.get(`${BASE_URL}/admin/get_all_role_changing_requests`,{

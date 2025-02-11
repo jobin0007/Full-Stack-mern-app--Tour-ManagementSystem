@@ -48,6 +48,8 @@
   ]),tourControllers.createTour)
     tourRoutes.get('/get_all_tour',tourControllers.getTours)
     tourRoutes.get('/search',tourControllers.searchTour)
+    tourRoutes.get('/detail/:tourId',tourControllers.getOneTour)
+
 
 
 

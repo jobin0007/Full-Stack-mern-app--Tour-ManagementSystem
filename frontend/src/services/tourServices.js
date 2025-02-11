@@ -12,6 +12,14 @@ export const toursAPI=async(data)=>{
     return response?.data
 }  
 
+export const tourDetailAPI=async(tourId)=>{
+  
+   
+  const response = await axios.get(`${BASE_URL}/tour/detail/${tourId}`)
+
+  return response?.data
+}  
+
 export const createTourAPI = async(data)=>{
   const token = getTourOperatorToken();
   const response = await axios.post(`${BASE_URL}/tour/create_tour`,data,{

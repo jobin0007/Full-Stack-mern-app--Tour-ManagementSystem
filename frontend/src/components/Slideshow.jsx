@@ -34,7 +34,7 @@ const Slideshow = () => {
   }, []);
 
   return (
-    <div className="relative w-full  mx-auto mt-6">
+    <div className="relative w-full p-4  mx-auto mt-6">
       <div className="relative w-full h-96 sm:h-[400px] md:h-[500px]">
         <img
           src={slides[currentSlide].image}

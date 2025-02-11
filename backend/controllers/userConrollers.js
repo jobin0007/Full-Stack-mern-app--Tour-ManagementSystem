@@ -92,8 +92,6 @@ const userControllers = {
     res.clearCookie("userData", { httpOnly: true, sameSite: "none", secure: false });
     res.clearCookie("token", { httpOnly: true, sameSite: "none", secure: false });
     
-  
-  
     res.json({
       message: "Logged out successfully",
     });

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Banner from "../components/Banner";
 import Tours from "./tours";
+import { IoClose, IoPersonAdd, IoLogIn } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { FaUserCircle, FaBars } from "react-icons/fa";
 import ExampleImage from "../assets/travel.png"; // Replace with your actual image path
@@ -50,35 +51,33 @@ const Home = () => {
            
 
             {showPopup && (
-              <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
-                  <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                    User Options
-                  </h2>
-                  <p className="mb-2">
-                    <Link to="/new-user" className="text-sky-600 mr-4 underline">
-                      New User ?
-                    </Link>
-                    <Link to="/user/register" className="text-sky-600 hover:underline">
-                      Sign In
-                    </Link>
-                  </p>
-                  <p className="mb-2">
+                 <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50 p-4 sm:p-6">
+                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg text-center">
+                   <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">User Options</h2>
                    
-                  </p>
-                  <p>
-                    <Link to="/user/login" className="text-sky-600 hover:underline">
-                      Login
-                    </Link>
-                  </p>
-                  <button
-                    onClick={() => setShowPopup(false)}
-                    className="mt-4 px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
+                   <div className="flex justify-center space-x-4 mb-3">
+                     <Link to="/new-user" className="flex items-center text-sky-600 hover:underline text-sm sm:text-base">
+                       <IoPersonAdd className="mr-1" /> New User
+                     </Link>
+                     <Link to="/user/register" className="flex items-center text-sky-600 hover:underline text-sm sm:text-base">
+                       <IoLogIn className="mr-1" /> Sign In
+                     </Link>
+                   </div>
+           
+                   <p className="mb-2">
+                     <Link to="/user/login" className="flex items-center justify-center text-sky-600 hover:underline text-sm sm:text-base">
+                       <IoLogIn className="mr-1" /> Login
+                     </Link>
+                   </p>
+           
+                   <button
+                     onClick={() => setShowPopup(false)}
+                     className="mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 w-full max-w-[150px] mx-auto"
+                   >
+                     <IoClose className="text-lg" /> Close
+                   </button>
+                 </div>
+               </div>
             )}
           </div>
         </div>
@@ -103,7 +102,7 @@ const Home = () => {
          <Tours filters={filters} />
          <Slideshow/>
          <SubscriptionSection/>
-      <Banner  />
+      <Banner   />
      
     </div>
   );

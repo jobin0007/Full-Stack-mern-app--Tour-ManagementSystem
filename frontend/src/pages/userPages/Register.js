@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import { FaEye, FaEyeSlash, FaUser, FaEnvelope, FaLock, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { registerAPI } from "../../services/userServices";
 import Cookies from "js-cookie";
-import {jwtDecode }from "jwt-decode"; // Correct import
+import { jwtDecode } from "jwt-decode";
 import { register } from "../../redux/userSlice";
 
 const Register = () => {
@@ -26,9 +26,9 @@ const Register = () => {
     onSuccess: (data) => {
       if (data?.token) {
         Cookies.set("UserData", data.token);
-        const decoded = jwtDecode(data.token); // Decode token
+        const decoded = jwtDecode(data.token);
         dispatch(register({ user: decoded, token: data.token }));
-        navigate("/user/login"); // Redirect after successful registration
+        navigate("/user/login");
       } else {
         setErrorMessage("Registration failed. Please try again.");
       }
@@ -60,13 +60,13 @@ const Register = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
-          Register
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r  p-4">
+      <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl border border-black">
+        <h2 className="text-sm sm:text-xl md:text-2xl lg:text-3xl font-bold mb-6 text-center text-gray-800 ">
+          Create an Account
         </h2>
         {errorMessage && (
-          <div className="bg-red-100 text-red-700 p-2 mb-4 rounded-md">
+          <div className="bg-red-100 text-red-700 p-3 mb-4 rounded-md text-center">
             {errorMessage}
           </div>
         )}
@@ -77,114 +77,88 @@ const Register = () => {
             mobile_number: "",
             address: "",
             password: "",
-            role: "user", // Default role as "user"
+            role: "user",
           }}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
           {() => (
-            <Form className="space-y-4">
+            <Form className="space-y-5">
               {/* Name Field */}
-              <div>
-                <label htmlFor="name" className="block text-gray-700 font-medium">
-                  Name
-                </label>
+              <div className="relative">
+                <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 <Field
                   type="text"
                   id="name"
                   name="name"
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Full Name"
+                  className="w-full text-xs sm:text-xs md:text-sm lg:text-lg pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <ErrorMessage
-                  name="name"
-                  component="div"
-                  className="text-red-500 text-sm"
-                />
+                <ErrorMessage name="name" component="div" className="text-red-500 text-sm" />
               </div>
 
               {/* Email Field */}
-              <div>
-                <label htmlFor="email" className="block text-gray-700 font-medium">
-                  Email
-                </label>
+              <div className="relative">
+                <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 <Field
                   type="email"
                   id="email"
                   name="email"
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Email Address"
+                  className="w-full pl-10 text-xs sm:text-xs md:text-sm lg:text-lg pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <ErrorMessage
-                  name="email"
-                  component="div"
-                  className="text-red-500 text-sm"
-                />
+                <ErrorMessage name="email" component="div" className="text-red-500 text-sm" />
               </div>
 
               {/* Mobile Number Field */}
-              <div>
-                <label
-                  htmlFor="mobile_number"
-                  className="block text-gray-700 font-medium"
-                >
-                  Mobile Number
-                </label>
+              <div className="relative">
+                <FaPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 <Field
                   type="text"
                   id="mobile_number"
                   name="mobile_number"
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Mobile Number"
+                  className="w-full text-xs sm:text-xs md:text-sm lg:text-lg pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <ErrorMessage
-                  name="mobile_number" // Fixed name
-                  component="div"
-                  className="text-red-500 text-sm"
-                />
+                <ErrorMessage name="mobile_number" component="div" className="text-red-500 text-sm" />
               </div>
 
               {/* Address Field */}
-              <div>
-                <label htmlFor="address" className="block text-gray-700 font-medium">
-                  Address
-                </label>
+              <div className="relative">
+                <FaMapMarkerAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 <Field
                   type="text"
                   id="address"
                   name="address"
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Address"
+                  className="w-full text-xs sm:text-xs md:text-sm lg:text-lg pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <ErrorMessage
-                  name="address"
-                  component="div"
-                  className="text-red-500 text-sm"
-                />
+                <ErrorMessage name="address" component="div" className="text-red-500 text-sm" />
               </div>
 
               {/* Password Field */}
               <div className="relative">
+                <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 <Field
                   type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
-                  placeholder="Enter Password"
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Password"
+                  className="w-full text-xs sm:text-xs md:text-sm lg:text-lg pl-10 pr-12 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <div
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
                   onClick={() => setShowPassword((prev) => !prev)}
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </div>
+                <ErrorMessage name="password" component="div" className="text-red-500 text-sm" />
               </div>
-              <ErrorMessage
-                name="password"
-                component="div"
-                className="text-red-500 text-sm"
-              />
 
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full text-xs sm:text-xs md:text-sm lg:text-lg bg-gradient-to-r bg-white text-black border border-black py-2 px-4 rounded-md font-medium hover:bg-gray-500 hover:border-none hover:text-white transition duration-300"
               >
                 Register
               </button>

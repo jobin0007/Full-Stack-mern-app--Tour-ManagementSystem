@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Banner from '../../components/Banner'
 import {
@@ -25,13 +25,17 @@ import {
   getBookingStatusAPI,
   getOneUserAPI,
   operatorRequestAPI,
+  userLogOutAPI,
 } from "../../services/userServices";
 import { IoHome } from "react-icons/io5";
 import Tours from "../tours";
 import Search from "../../components/Search";
-import Header from '../../components/Header'
+import Header from '../../components/Header';
+import TourDetail from "../tours/TourDetail";
+
 
 const UserDashboard = () => {
+  const navigate = useNavigate()
   const { id: userId } = useParams();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -43,6 +47,17 @@ const UserDashboard = () => {
   const handleSearch = (filterData) => {
     setFilters(filterData);
   };
+
+  const {logout}= useMutation({
+    mutationKey:['logout'],
+    mutationFn:userLogOutAPI,
+    onSuccess:()=>{
+
+    }
+  })
+ const handleLogOut =()=>{
+    logout()
+  }
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["user", userId],
@@ -101,7 +116,9 @@ const UserDashboard = () => {
         <div className="flex col-span-3 justify-end gap-2">
           <AiOutlineHome className="text-gray-700  xs:text-xs  sm:text-xs lg:text-lg" />
           <span className=" xs:text-xs  sm:text-xs lg:text-lg ">Home</span>
-          <button className="flex items-center gap-2 text-red-600 hover:text-red-800">
+          <button className="flex items-center gap-2 text-red-600 hover:text-red-800"
+          onClick={handleLogOut}
+          >
             <AiOutlineLogout className="text-lg" /> Logout
           </button>
           <div className="flex items-center gap-2">
@@ -186,12 +203,12 @@ const UserDashboard = () => {
             </div>
           )}
 
-{/* <FaUserCircle className="text-indigo-500 text-4xl text-right" /> */}
-          {/* <h1 className="text-2xl font-bold mb-4 ">
-            Welcome, <span className="text-indigo-500">{userFound?.name}</span>
-          </h1> */}
+
              <Search onSearch={handleSearch} />
-          <Tours userData={userFound} filters={filters} />
+  
+
+          <Tours  filters={filters} />
+
         </div>
       </div>
       <Banner />

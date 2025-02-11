@@ -187,6 +187,20 @@ const tourControllers={
         // }
         //  throw new Error("Unauthorized Access ")
     }),
+    getOneTour:asyncHandler(async(req,res)=>{
+        const{tourId}= req.params
+        if(!tourId){
+            throw new Error("Please Provide Id of Tour ")
+        }
+        const tour = await Tour.findById(tourId).populate('tourOperatorId','name')
+        if(!tour){
+            throw new Error("Tour Can Not Found")
+        }
+        res.json({
+            message:'Tour Found SuccessFully',
+            tour
+        })
+    })
     
 }
 module.exports = tourControllers

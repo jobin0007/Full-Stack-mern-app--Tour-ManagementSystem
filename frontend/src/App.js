@@ -20,6 +20,7 @@ import NotFound from "./NotFound";
 import GetAllUsers from "./pages/adminPage/GetAllUsers";
 import GetAllTourOperators from "./pages/adminPage/GetAllTourOperators";
 import Tours from "./pages/tours";
+import TourDetail from "./pages/tours/TourDetail";
 
 function App() {
   const user = useSelector((state) => state.user);
@@ -36,11 +37,13 @@ function App() {
         <Route path="/user/register" element={<Register />} />
         <Route path="/tour-operator/login" element={<TourOperatorLogin />} />
         <Route path="/tours" element={<Tours/>}/>
+         <Route path="/tour/:tourId" element={<TourDetail/>}/>
+         <Route path="tour/:tourId" element={<TourDetail/>}/>
 
-      
         {user && (
           <>
             <Route path="/user/:id" element={<UserDashBoard />} />
+
             <Route path="/user/:id/create-custom-tour" element={<CreateCustomTour />} />
             <Route path="/user/:userId/view-Bookings" element={<Viewebookings />} />
           </>
