@@ -3,17 +3,30 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useMutation } from "@tanstack/react-query";
 import { createCustomTourAPI } from "../../services/customTourServices";
+import {AiOutlineClose} from "react-icons/ai";
 
 const CreateCustomTour = () => {
 const [errorMessage,setErrorMessage]= useState(null)
+
+
+
+
+const [notification, setNotification] = useState(null);
+const showNotification = (message, type) => {
+  setNotification({ message, type });
+
+  setTimeout(() => {
+    setNotification(null);
+  }, 3000); 
+};
 
 
 const { mutateAsync } = useMutation({
     mutationFn: createCustomTourAPI,
    
     onError: (error) => {
-     
-      setErrorMessage(error.response?.data?.error || "An Unexpected Error Occurred") 
+      showNotification(  error?.response?.data?.error, "error"  )
+
    
     },
    
@@ -21,7 +34,7 @@ const { mutateAsync } = useMutation({
   });
 
 
-  // Form validation schema
+ 
   const validationSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
     location: Yup.string().required("Location is required"),
@@ -38,7 +51,7 @@ const { mutateAsync } = useMutation({
       .required("Participants is required"),
   });
 
-  // Initial form values
+
   const initialValues = {
     title: "",
     location: "",
@@ -49,7 +62,7 @@ const { mutateAsync } = useMutation({
     participants: "",
   };
 
-  // Form submission handler
+
   const handleSubmit = async(values) => {
     console.log("Form Values:", values);
      await mutateAsync(values)
@@ -83,7 +96,7 @@ const { mutateAsync } = useMutation({
                 <ErrorMessage name="title" component="p" className="text-red-500 text-sm mt-1" />
               </div>
 
-              {/* Location */}
+             
               <div>
                 <label htmlFor="location" className="block text-sm font-medium text-gray-700">
                   Location
@@ -97,7 +110,7 @@ const { mutateAsync } = useMutation({
                 <ErrorMessage name="location" component="p" className="text-red-500 text-sm mt-1" />
               </div>
 
-              {/* Description */}
+       
               <div>
                 <label htmlFor="description" className="block text-sm font-medium text-gray-700">
                   Description
@@ -116,7 +129,7 @@ const { mutateAsync } = useMutation({
                 />
               </div>
 
-              {/* Start Date */}
+       
               <div>
                 <label htmlFor="start_date" className="block text-sm font-medium text-gray-700">
                   Start Date
@@ -133,7 +146,7 @@ const { mutateAsync } = useMutation({
                 />
               </div>
 
-              {/* End Date */}
+         
               <div>
                 <label htmlFor="end_date" className="block text-sm font-medium text-gray-700">
                   End Date
@@ -150,7 +163,7 @@ const { mutateAsync } = useMutation({
                 />
               </div>
 
-              {/* Budget */}
+            
               <div>
                 <label htmlFor="budget" className="block text-sm font-medium text-gray-700">
                   Budget
@@ -164,7 +177,7 @@ const { mutateAsync } = useMutation({
                 <ErrorMessage name="budget" component="p" className="text-red-500 text-sm mt-1" />
               </div>
 
-              {/* Participants */}
+           
               <div>
                 <label htmlFor="participants" className="block text-sm font-medium text-gray-700">
                   Participants
@@ -182,7 +195,7 @@ const { mutateAsync } = useMutation({
                 />
               </div>
 
-              {/* Submit Button */}
+              
               <div className="text-center">
                 <button
                   type="submit"
@@ -195,20 +208,15 @@ const { mutateAsync } = useMutation({
             </Form>
           )}
         </Formik>
-        {errorMessage && (
-            <div
-              className="fixed bottom-4 right-4 bg-red-500 text-white p-4 rounded shadow-md z-50 text-sm sm:text-base"
-              role="alert"
-            >
-              <p>{errorMessage}</p>
-              <button
-                onClick={() => setErrorMessage(null)}
-                className="mt-2 bg-white text-red-500 px-2 py-1 rounded"
-              >
-                Close
-              </button>
-            </div>
-          )}
+        {notification && (
+        <div className={`fixed  right-4 z-50 bottom-4  px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
+          ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}>
+          <span>{notification.message}</span>
+          <button onClick={() => setNotification(null)} className="text-white ml-2">
+            <AiOutlineClose />
+          </button>
+        </div>
+      )}
       </div>
     </div>
   );

@@ -9,19 +9,30 @@ import { registerAPI } from "../../services/userServices";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { register } from "../../redux/userSlice";
+import {AiOutlineClose} from "react-icons/ai";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
+
+  const [notification, setNotification] = useState(null);
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+  
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000); 
+  };
   const { mutateAsync } = useMutation({
     mutationFn: registerAPI,
     onError: (error) => {
-      setErrorMessage(
-        error.response?.data?.error || "An unexpected error occurred."
-      );
+   
+        showNotification(error.response?.data?.error || "An unexpected error occurred.", "error"  )
+       
+    
     },
     onSuccess: (data) => {
       if (data?.token) {
@@ -30,7 +41,8 @@ const Register = () => {
         dispatch(register({ user: decoded, token: data.token }));
         navigate("/user/login");
       } else {
-        setErrorMessage("Registration failed. Please try again.");
+        showNotification("Registration failed. Please try again", "error"  )
+      
       }
     },
   });
@@ -51,11 +63,11 @@ const Register = () => {
   });
 
   const handleSubmit = async (values) => {
-    setErrorMessage(null);
+    setNotification(null)
     try {
       await mutateAsync(values);
     } catch (error) {
-      console.error("Error during submission:", error);
+     
     }
   };
 
@@ -65,11 +77,7 @@ const Register = () => {
         <h2 className="text-sm sm:text-xl md:text-2xl lg:text-3xl font-bold mb-6 text-center text-gray-800 ">
           Create an Account
         </h2>
-        {errorMessage && (
-          <div className="bg-red-100 text-red-700 p-3 mb-4 rounded-md text-center">
-            {errorMessage}
-          </div>
-        )}
+     
         <Formik
           initialValues={{
             name: "",
@@ -166,6 +174,15 @@ const Register = () => {
           )}
         </Formik>
       </div>
+      {notification && (
+        <div className={`fixed  right-4 z-50 bottom-4  px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
+          ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}>
+          <span>{notification.message}</span>
+          <button onClick={() => setNotification(null)} className="text-white ml-2">
+            <AiOutlineClose />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

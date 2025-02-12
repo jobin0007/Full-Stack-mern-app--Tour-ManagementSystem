@@ -35,16 +35,25 @@ import TourDetail from "../tours/TourDetail";
 import useLogout from "../../hooks/useLogout";
 
 
+
 const UserDashboard = () => {
   const logoutMutation = useLogout()
   const { id: userId } = useParams();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [notification, setNotification] = useState(null);
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+  
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000); 
+  };
 
   const [message, setMessage] = useState({ text: "", type: "" });
-  const [filters, setFilters] = useState({});  // Store search filters
+  const [filters, setFilters] = useState({});  
 
-  // Update filters when user searches
+
   const handleSearch = (filterData) => {
     setFilters(filterData);
   };
@@ -58,7 +67,9 @@ const UserDashboard = () => {
     queryKey: ["user", userId],
     queryFn: () => getOneUserAPI(userId),
     onError: (err) =>
-      setMessage({ text: "Failed to load user data.", type: "error" }),
+    showNotification(  err?.response?.data?.error, "error"  )
+
+    
   });
 
   const {
@@ -74,18 +85,18 @@ const UserDashboard = () => {
   const { mutateAsync, isLoading: isMutationLoading } = useMutation({
     mutationFn: operatorRequestAPI,
     onSuccess: (response) => {
-      setMessage({ text: response.message, type: "success" });
+      showNotification(  response.message, "success"  )
+
+      
     },
     onError: (err) => {
-      setMessage({
-        text: err.response?.data?.message || "Something went wrong.",
-        type: "error",
-      });
+      showNotification( err.response?.data?.message || "Something went wrong.", "error"  )
+    
     },
   });
 
   const handleRoleChangeRequest = async () => {
-    setMessage({ text: "", type: "" });
+    
     await mutateAsync();
   };
 
@@ -163,17 +174,7 @@ const UserDashboard = () => {
             className="flex items-center gap-2 text-sm hover:text-indigo-600 cursor-pointer transition duration-200">
               <FaBook />  Status of Custom Tour
             </Link>
-{/* 
-            {hasBookings && (
-              <div>
-                <h2 className="font-bold text-lg">Booking Status:</h2>
-                {bookingStatuses.map((status, index) => (
-                  <p key={index} className="text-gray-700">
-                    <span className="font-medium">Status:</span> {status}
-                  </p>
-                ))}
-              </div>
-            )} */}
+
 
             <button
               className="mt-6 text-sm text-indigo-500 underline cursor-pointer hover:text-indigo-700 transition duration-200"
@@ -212,6 +213,17 @@ const UserDashboard = () => {
         </div>
       </div>
       <Banner />
+
+      {notification && (
+        <div className={`fixed  right-4 z-50 bottom-4  px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
+          ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}>
+          <span>{notification.message}</span>
+          <button onClick={() => setNotification(null)} className="text-white ml-2">
+            <AiOutlineClose />
+          </button>
+        </div>
+      )}
+
     </div>
     
   );

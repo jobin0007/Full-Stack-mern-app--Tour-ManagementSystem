@@ -3,22 +3,17 @@ import Tours from "../tours";
 import { toursAPI } from "../../services/tourServices";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteTourAPI } from "../../services/adminServices";
-
-  
-// if (isLoading) {
-//   return <div className="text-center mt-4">Loading tours...</div>;
-// }
-
-// if (isError) {
-//   return <div className="text-red-500 text-center mt-4">Error: {error?.message || "Failed to fetch tours"}</div>;
-// }
-
-// if (displayedTours.length === 0) {
-//   return <div className="text-center mt-4">No tours available at the moment.</div>;
-// }
+import {AiOutlineClose} from "react-icons/ai";
 
 const Tour = () => {
-  const [message, setMessage] = useState({ text: "", type: "" });
+  const [notification, setNotification] = useState(null);
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000); 
+  };
 
   const queryClient = useQueryClient(); // Hook to interact with React Query cache
 
@@ -33,17 +28,14 @@ const Tour = () => {
   
       queryClient.invalidateQueries(["tours"]);
   
-      setMessage({ text: "Tour deleted successfully", type: "success" });
-      setTimeout(() => {
-        setMessage({ text: "", type: "" }); 
-      }, 3000);
-    } catch (error) {
-      console.error("Error deleting Tour:", error);
     
-      setMessage({ text: "Failed to delete Tur", type: "error" });
-      setTimeout(() => {
-        setMessage({ text: "", type: "" }); 
-      }, 2000);
+      showNotification( "Tour deleted successfully", "success" )
+
+   
+    } catch (error) {
+      showNotification( "Failed to delete Tur", "error"  )
+    
+  
     }
   };
   
@@ -53,15 +45,7 @@ const Tour = () => {
   return (
     <div>
       <h2 className="text-xl font-semibold text-sky-500 mb-4">All Tours</h2>
-      {message.text && (
-            <div
-              className={`text-center p-4 mb-6 rounded-md ${
-                message.type === "success" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-              }`}
-            >
-              {message.text}
-            </div>
-          )}
+     
       <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {tours.map((tour) => (
           <div
@@ -103,7 +87,15 @@ const Tour = () => {
           </div>
         ))}
       </div>
-
+      {notification && (
+        <div className={`fixed  right-4 z-50 bottom-4  px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
+          ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}>
+          <span>{notification.message}</span>
+          <button onClick={() => setNotification(null)} className="text-white ml-2">
+            <AiOutlineClose />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

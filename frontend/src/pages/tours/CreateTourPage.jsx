@@ -5,25 +5,31 @@ import * as Yup from "yup";
 import { useMutation } from "@tanstack/react-query";
 import { createTourAPI } from "../../services/tourServices";
 import backgroundimg from "../../assets/world-landmarks-design_1132-14.avif";
+import {AiOutlineClose} from "react-icons/ai";
 
 const CreateTourPage = () => {
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({ text: "", type: "" });
+  const [notification, setNotification] = useState(null);
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000); 
+  };
 
   const { mutateAsync } = useMutation({
     mutationFn: createTourAPI,
     onSuccess: (response) => {
-      setMessage({
-        text: response?.message || "Tour successfully created!",
-        type: "success",
-      });
+      showNotification(response?.message, "success"  )
+  
+     
       setLoading(false);
     },
     onError: (error) => {
-      setMessage({
-        text: error?.response?.data?.message || "Something went wrong!",
-        type: "error",
-      });
+      showNotification( error?.response?.data?.message, "error"  )
+
+      
       setLoading(false);
     },
   });
@@ -244,18 +250,16 @@ const CreateTourPage = () => {
             )}
           </Formik>
 
-          {/* Success/Error Message */}
-          {message.text && (
-            <div
-              className={`p-4 mt-4 rounded-md ${
-                message.type === "success"
-                  ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700"
-              }`}
-            >
-              {message.text}
-            </div>
-          )}
+       
+          {notification && (
+        <div className={`fixed  right-4 z-50 bottom-4  px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
+          ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}>
+          <span>{notification.message}</span>
+          <button onClick={() => setNotification(null)} className="text-white ml-2">
+            <AiOutlineClose />
+          </button>
+        </div>
+      )}
         </div>
       </div>
     </div>

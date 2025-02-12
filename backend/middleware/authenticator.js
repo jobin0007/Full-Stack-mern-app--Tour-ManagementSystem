@@ -14,7 +14,7 @@ if(!cookies){
 
 const jwtdecode =jwt.decode(cookies)
 // const jwtdecode = jwt.verify(token, process.env.JWT_SECRET);
-console.log(jwtdecode)
+
 switch (jwtdecode.role) {
   case 'user':
       req.user = jwtdecode.userId;

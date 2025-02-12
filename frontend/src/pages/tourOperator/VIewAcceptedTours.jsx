@@ -4,14 +4,24 @@ import { viewAcceptedToursAPI } from '../../services/tourOperatorServices';
 import { FaCalendarAlt, FaMoneyBillWave, FaBook, FaUser, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { CiMobile3 } from "react-icons/ci";
 import { GiTakeMyMoney } from "react-icons/gi";
+import {AiOutlineClose} from "react-icons/ai";
+
 
 const VIewAcceptedTours = () => {
-  const [errorMessage, setErrorMessage] = useState("");
+  const [notification, setNotification] = useState(null);
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000); 
+  };
   const { data, isLoading, isError } = useQuery({
     queryKey: ['acceptedTours'],
     queryFn: viewAcceptedToursAPI,
     onError: (error) => {
-      setErrorMessage(error?.response?.data?.message || "An error occurred");
+      showNotification( error?.response?.data?.message, "error"  )
+
     }
   });
 
@@ -21,19 +31,14 @@ const VIewAcceptedTours = () => {
     <div className="container mx-auto max-w-7xl p-4">
       <h2 className="text-2xl md:text-3xl font-semibold text-center mb-6">Accepted Tours</h2>
 
-      {/* Error Message */}
-      {isError && (
-        <div className="text-red-500 text-center mb-4">
-          <FaTimesCircle className="inline-block mr-2" /> {errorMessage}
-        </div>
-      )}
+  
+   
 
-      {/* Loader */}
       {isLoading && (
         <div className="text-center text-gray-500">Loading accepted tours...</div>
       )}
 
-      {/* Booking Data */}
+
       {!isLoading && response.length === 0 ? (
         <p className="text-center text-gray-500 text-sm md:text-base">No accepted tours found.</p>
       ) : (
@@ -44,10 +49,7 @@ const VIewAcceptedTours = () => {
               className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
             >
               <div className="space-y-4">
-                {/* <div className="flex items-center gap-2">
-                  <GiTakeMyMoney className="text-green-500" />
-                  <span className="font-semibold">Tour:</span> {booking.tourId?.title || 'N/A'}
-                </div> */}
+               
                 <div className="flex items-center gap-2">
                   <FaUser className="text-blue-500" />
                   <span className="font-semibold">User Name:</span> {booking.userId?.name || 'N/A'}
@@ -83,13 +85,20 @@ const VIewAcceptedTours = () => {
             </div>
           ))}
         </div>
+      
+
+
+  
       )}
 
-      {/* Success/Backend Message Popup */}
-      {errorMessage && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white p-4 rounded-lg shadow-md w-80">
-          <FaTimesCircle className="inline-block mr-2" />
-          {errorMessage}
+      
+{notification && (
+        <div className={`fixed  right-4 z-50 bottom-4  px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
+          ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}>
+          <span>{notification.message}</span>
+          <button onClick={() => setNotification(null)} className="text-white ml-2">
+            <AiOutlineClose />
+          </button>
         </div>
       )}
     </div>

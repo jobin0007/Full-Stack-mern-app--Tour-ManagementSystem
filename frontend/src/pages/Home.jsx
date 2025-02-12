@@ -8,13 +8,16 @@ import ExampleImage from "../assets/travel.png"; // Replace with your actual ima
 import Search from "../components/Search";
 import SubscriptionSection from "../components/Subcription";
 import Slideshow from "../components/Slideshow";
+import UserLogin from "./userPages/UserLogin";
+
 
 const Home = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-  const [filters, setFilters] = useState({});  // Store search filters
+  const [filters, setFilters] = useState({}); 
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
-  // Update filters when user searches
+ 
   const handleSearch = (filterData) => {
     setFilters(filterData);
   };
@@ -64,11 +67,16 @@ const Home = () => {
                      </Link>
                    </div>
            
-                   <p className="mb-2">
-                     <Link to="/user/login" className="flex items-center justify-center text-sky-600 hover:underline text-sm sm:text-base">
-                       <IoLogIn className="mr-1" /> Login
-                     </Link>
-                   </p>
+                   <div>
+     
+        <button
+          onClick={() => setIsLoginOpen(true)}
+          className="flex mx-auto items-center justify-center text-sky-600 hover:underline text-sm sm:text-base"
+        >
+          <IoLogIn className="mr-1" /> Login
+        </button>
+      <UserLogin isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+    </div>
            
                    <button
                      onClick={() => setShowPopup(false)}

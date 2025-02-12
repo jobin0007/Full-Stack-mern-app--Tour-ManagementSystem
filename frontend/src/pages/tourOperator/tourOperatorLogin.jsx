@@ -3,7 +3,7 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { AiOutlineUser, AiOutlineLock } from "react-icons/ai";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
-
+import {AiOutlineClose} from "react-icons/ai";
 import exampleImage from "../../assets/travel-concept-with-worldwide-landmarks_23-2149153263.avif";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -14,8 +14,17 @@ import { login } from "../../redux/tourOperatoSlice";
 import Cookies from "js-cookie";
 
 const TourOperatorLogin = () => {
-  const [errorMessage, setErrorMessage] = useState(null);
+ 
   const [showPassword, setShowPassword] = useState(false);
+  const [notification, setNotification] = useState(null);
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000); 
+  };
+
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -23,11 +32,12 @@ const TourOperatorLogin = () => {
   const { mutateAsync } = useMutation({
     mutationFn: tourOperatorLoginAPI,
     onError: (error) => {
-      setErrorMessage(error.response?.data?.error || "An Unexpected Error Occurred");
+      showNotification(error.response?.data?.error, "error");
+     
     },
     onSuccess: (data) => {
       if (data) {
-        console.log("data",data);
+     
         try {
           Cookies.set("tourOperatorData", data?.token);
           const decoded = jwtDecode(data?.token);
@@ -36,10 +46,12 @@ const TourOperatorLogin = () => {
           const tourOperatorId = decoded?.tourOperatorId;
           navigate(`/tour-operator/${tourOperatorId}`);
         } catch (err) {
-          setErrorMessage("Invalid token received from server.");
+       
+          showNotification("Invalid token received from server.", "error");
         }
       } else {
-        setErrorMessage("Login failed: No token received from server.");
+      
+        showNotification("Login failed: No token received from server", "error");
       }
     },
   });
@@ -142,22 +154,18 @@ const TourOperatorLogin = () => {
               </Form>
             )}
           </Formik>
-          {errorMessage && (
-            <div
-              className="fixed bottom-4 right-4 bg-red-500 text-white p-4 rounded shadow-md z-50 text-sm sm:text-base"
-              role="alert"
-            >
-              <p>{errorMessage}</p>
-              <button
-                onClick={() => setErrorMessage(null)}
-                className="mt-2 bg-white text-red-500 px-2 py-1 rounded"
-              >
-                Close
-              </button>
-            </div>
-          )}
+        
         </div>
       </div>
+      {notification && (
+        <div className={`fixed  right-4 z-50 bottom-4  px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
+          ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}>
+          <span>{notification.message}</span>
+          <button onClick={() => setNotification(null)} className="text-white ml-2">
+            <AiOutlineClose />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

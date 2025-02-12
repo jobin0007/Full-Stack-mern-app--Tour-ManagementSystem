@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { viewUserBookingsAPI } from "../../services/userServices";
@@ -20,31 +20,41 @@ import {
   FaCreditCard,
 } from "react-icons/fa";
 import { getStatusIcon } from "../../hooks/status";
+import {AiOutlineClose} from "react-icons/ai";
 
 const ViewBookings = () => {
   const { userId } = useParams();
   const queryClient = useQueryClient();
+  const [notification, setNotification] = useState(null);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["userBookings", userId],
     queryFn: () => viewUserBookingsAPI(userId),
   });
-  console.log(data);
-
+  
+ 
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+  
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000); 
+  };
   const deleteBookingMutation = useMutation({
     mutationFn: deleteBookingAPI,
     onSuccess: () => {
       queryClient.invalidateQueries(["userBookings", userId]);
-      alert("Booking deleted successfully!");
+      showNotification("Booking deleted successfully!", "success"  )
+     
     },
     onError: (error) => {
-      alert(error.response?.data?.message || "Failed to delete booking.");
+      showNotification(error.response?.data?.message || "Failed to delete booking.", "error"  )
     },
   });
 
   const initiatePayment = async (bookingId) => {
     const orderData = await createOrderAPI(bookingId);
-    console.log("orderData", orderData);
+
 
     const { order_id, amount, currency } = orderData;
 
@@ -156,6 +166,15 @@ const ViewBookings = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+       {notification && (
+        <div className={`fixed  right-4 z-50 bottom-4  px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
+          ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}>
+          <span>{notification.message}</span>
+          <button onClick={() => setNotification(null)} className="text-white ml-2">
+            <AiOutlineClose />
+          </button>
         </div>
       )}
     </div>

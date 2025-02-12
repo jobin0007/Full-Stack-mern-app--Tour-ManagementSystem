@@ -30,8 +30,8 @@ const TourOperatorDashboard = () => {
   const [totalPrice, setTotalPrice] = useState("");
   const [notification, setNotification] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-  
-  const [message, setMessage] = useState(""); 
+
+  const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -39,7 +39,7 @@ const TourOperatorDashboard = () => {
     queryKey: ["customTourRequests"],
     queryFn: getAllCustomToursAPI,
   });
- 
+
   const { tourOperatorId } = useParams();
   const { data: profile } = useQuery({
     queryKey: ["operatorProfile", tourOperatorId],
@@ -51,14 +51,14 @@ const TourOperatorDashboard = () => {
     mutationFn: acceptBookingAPI,
   });
 
-  const{mutateAsync:rejectBooking}= useMutation({
-   mutationKey:['reject'],
-   mutationFn:rejectBookingAPI
+  const { mutateAsync: rejectBooking } = useMutation({
+    mutationKey: ['reject'],
+    mutationFn: rejectBookingAPI
 
   })
-  const RejectBooking =async(bookingId)=>{
+  const RejectBooking = async (bookingId) => {
     const response = await rejectBooking(bookingId)
-  } 
+  }
 
   const AcceptBooking = async (bookingId) => {
     const response = await acceptBooking(bookingId);
@@ -70,22 +70,22 @@ const TourOperatorDashboard = () => {
   });
 
   const booking = bookingsData?.bookings;
-  console.log(bookingsData);
+ 
   const tourOperator = profile?.findPerson;
   const requests = data?.foundTours || [];
- 
-  
+
+
   const { mutateAsync: rejectCustomTour } = useMutation({
     mutationKey: ["rejectCustomTour"],
-    mutationFn: rejectCustomTourAPI, 
+    mutationFn: rejectCustomTourAPI,
   });
 
-    const showNotification = (message, type) => {
+  const showNotification = (message, type) => {
     setNotification({ message, type });
 
     setTimeout(() => {
       setNotification(null);
-    }, 3000); 
+    }, 3000);
   };
 
   const handleAccept = async () => {
@@ -95,7 +95,7 @@ const TourOperatorDashboard = () => {
         return;
       }
       if (!totalPrice) {
-    showNotification(" Enter total price!", "error");
+        showNotification(" Enter total price!", "error");
         return;
       }
 
@@ -113,9 +113,9 @@ const TourOperatorDashboard = () => {
 
   const handleReject = async (foundTourId) => {
 
-      await rejectCustomTour(foundTourId);
-      console.log("Tour rejected successfully");
-  
+    await rejectCustomTour(foundTourId);
+    console.log("Tour rejected successfully");
+
   };
   const handlePopupSubmit = () => {
     console.log(
@@ -138,7 +138,7 @@ const TourOperatorDashboard = () => {
           <AiOutlineMenu />
         </button>
         <div className="flex flex-col  items-center">
-          {/* User Icon */}
+          
           <PiBuildingOfficeBold className="text-gray-700 text-4xl mb-2" />
           <h1 className="text-xl lg:text-2xl font-semibold">
             {tourOperator?.name}
@@ -169,29 +169,29 @@ const TourOperatorDashboard = () => {
                   <span>Change Mobile Number</span>
                 </Link>
               </li>
-             
-                <Link
-                  to="/tours"
-                  className=" hover:underline flex items-center space-x-2"
-                >
-                  <AiOutlineFileText size={24} className="" />
-                  <span>Get My Tours</span>
-                </Link>
-              
-             
-                <Link
-                  to="/create-tour"
-                  className=" hover:underline flex items-center space-x-2"
-                >
-                  <AiOutlineCalendar size={24} className="" />
-                  <span>Create Tour</span>
-                </Link>
-             <Link
-             to={`/tour-operator/${tourOperatorId}/view-accepted-tours`}
-              className=" hover:underline flex items-center space-x-2">
-                <IoShieldCheckmarkOutline size={24}/>
-             <span>Accepted Bookings</span>
-             </Link>
+
+              <Link
+                to="/tours"
+                className=" hover:underline flex items-center space-x-2"
+              >
+                <AiOutlineFileText size={24} className="" />
+                <span>Get My Tours</span>
+              </Link>
+
+
+              <Link
+                to="/create-tour"
+                className=" hover:underline flex items-center space-x-2"
+              >
+                <AiOutlineCalendar size={24} className="" />
+                <span>Create Tour</span>
+              </Link>
+              <Link
+                to={`/tour-operator/${tourOperatorId}/view-accepted-tours`}
+                className=" hover:underline flex items-center space-x-2">
+                <IoShieldCheckmarkOutline size={24} />
+                <span>Accepted Bookings</span>
+              </Link>
             </ul>
           </div>
         </div>
@@ -200,9 +200,9 @@ const TourOperatorDashboard = () => {
         <p className="font-bold font-serif text-lg">Welcome , </p>
         <p className="mx-3"> {tourOperator.name}</p>
       </div>
-      {/* Main Content */}
+     
       <main className="p-4 sm:p-6">
-        {/* Custom Tour Requests and Bookings */}
+      
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           <section className="bg-white shadow-lg p-4 rounded-lg">
             <h1 className="text-lg font-semibold mb-4 flex items-center space-x-2">
@@ -254,15 +254,15 @@ const TourOperatorDashboard = () => {
                       </p>
                     </div>
                     <div className="flex space-x-4">
-                    <button
-      onClick={() => {
-        setSelectedRequest(request._id);
-        setShowModal(true);
-      }}
-      className="bg-green-500 text-white px-4 py-2 text-sm rounded-md hover:bg-green-600"
-    >
-      Accept
-    </button>
+                      <button
+                        onClick={() => {
+                          setSelectedRequest(request._id);
+                          setShowModal(true);
+                        }}
+                        className="bg-green-500 text-white px-4 py-2 text-sm rounded-md hover:bg-green-600"
+                      >
+                        Accept
+                      </button>
                       <button
                         onClick={() => handleReject(request._id)}
                         className="bg-red-500 text-white px-4 py-2 text-sm rounded-md hover:bg-red-600"
@@ -271,33 +271,33 @@ const TourOperatorDashboard = () => {
                       </button>
                     </div>
                     {showModal && (
-      <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-        <div className="bg-white p-6 rounded-md w-96">
-          <h2 className="text-lg font-medium mb-4">Enter Total Price</h2>
-          <input
-            type="number"
-            value={totalPrice}
-            onChange={(e) => setTotalPrice(e.target.value)}
-            placeholder="Enter price"
-            className="w-full p-2 border rounded-md mb-4"
-          />
-          <div className="flex justify-end space-x-4">
-            <button
-              onClick={() => setShowModal(false)}
-              className="bg-gray-500 text-white px-4 py-2 text-sm rounded-md"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleAccept}
-              className="bg-green-500 text-white px-4 py-2 text-sm rounded-md"
-            >
-              Submit
-            </button>
-          </div>
-        </div>
-      </div>
-    )}
+                      <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white p-6 rounded-md w-96">
+                          <h2 className="text-lg font-medium mb-4">Enter Total Price</h2>
+                          <input
+                            type="number"
+                            value={totalPrice}
+                            onChange={(e) => setTotalPrice(e.target.value)}
+                            placeholder="Enter price"
+                            className="w-full p-2 border rounded-md mb-4"
+                          />
+                          <div className="flex justify-end space-x-4">
+                            <button
+                              onClick={() => setShowModal(false)}
+                              className="bg-gray-500 text-white px-4 py-2 text-sm rounded-md"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={handleAccept}
+                              className="bg-green-500 text-white px-4 py-2 text-sm rounded-md"
+                            >
+                              Submit
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))
               ) : (
@@ -363,7 +363,7 @@ const TourOperatorDashboard = () => {
                             Accept
                           </button>
                           <button className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition "
-                          onClick={()=>RejectBooking(booking._id)}
+                            onClick={() => RejectBooking(booking._id)}
                           >
                             Reject
                           </button>
@@ -380,7 +380,7 @@ const TourOperatorDashboard = () => {
         </div>
       </main>
       {notification && (
-        <div className={`fixed bottom-4 right-4 px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
+        <div className={`fixed  right-4 z-50 bottom-4  px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
           ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}>
           <span>{notification.message}</span>
           <button onClick={() => setNotification(null)} className="text-white ml-2">

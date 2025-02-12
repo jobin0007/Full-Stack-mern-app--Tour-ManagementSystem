@@ -3,18 +3,27 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { searchToursAPI } from "../../services/tourServices";
 import { createBookingAPI } from "../../services/bookingServices";
 import { useNavigate, useParams } from "react-router-dom";
+import {AiOutlineClose} from "react-icons/ai";
 
 const Tours = ({ filters}) => {
   
   const navigate = useNavigate()
-  // const queryClient = useQueryClient();
-  const [message, setMessage] = useState({ type: "", text: "" });
-  const [filteredTours, setFilteredTours] = useState([]);
 
-  // Fetch Tours based on filters
+  const [filteredTours, setFilteredTours] = useState([]);
+  const [notification, setNotification] = useState(null);
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000); 
+  };
+
+
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["searchTours", filters],
     queryFn: () => searchToursAPI(filters),
+    
   });
 
   useEffect(() => {
@@ -61,11 +70,12 @@ const Tours = ({ filters}) => {
         ))}
       </div>
 
-      {message.text && (
-        <div className={`fixed bottom-4 right-4 p-4 rounded shadow-md ${message.type === "success" ? "bg-green-500" : "bg-red-500"} text-white`}>
-          <p>{message.text}</p>
-          <button onClick={() => setMessage({ type: "", text: "" })} className="mt-2 bg-white text-black px-2 py-1 rounded">
-            Close
+      {notification && (
+        <div className={`fixed  right-4 z-50 bottom-4  px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
+          ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}>
+          <span>{notification.message}</span>
+          <button onClick={() => setNotification(null)} className="text-white ml-2">
+            <AiOutlineClose />
           </button>
         </div>
       )}

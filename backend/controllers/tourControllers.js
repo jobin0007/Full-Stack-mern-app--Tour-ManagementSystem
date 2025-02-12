@@ -67,7 +67,7 @@ const tourControllers={
             if (title) filter.title = { $regex: title,$options: "i"}; 
             if (price) filter.price = Number(price); 
     
-            console.log("Filter:", filter); 
+            
     
          
             const results = await Tour.find(filter).populate('tourOperatorId','name')

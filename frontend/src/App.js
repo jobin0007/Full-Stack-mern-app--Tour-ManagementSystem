@@ -1,6 +1,6 @@
 import "./App.css";
 import React from "react";
-import { Route, BrowserRouter, Routes } from "react-router-dom";
+import { Route, BrowserRouter, Routes, useLocation } from "react-router-dom";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Register from "./pages/userPages/Register";
@@ -24,16 +24,21 @@ import TourDetail from "./pages/tours/TourDetail";
 import CustomTourStatus from "./pages/userPages/CustomTourStatus";
 
 function App() {
+  const location = useLocation();
+
   const user = useSelector((state) => state.user);
   const admin = useSelector((state) => state.admin);
   const tourOperator = useSelector((state) => state.tourOperator);
 
+  // Hide footer on these routes
+  const hideFooterRoutes = ["/user/login"]
+
   return (
-    <BrowserRouter>
+    <>
       <Routes>
     
         <Route path="/" element={<Home />} />
-        <Route path="/user/login" element={<UserLogin />} />
+        <Route path="/user/login" element={<UserLogin isOpen={true} />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/user/register" element={<Register />} />
         <Route path="/tour-operator/login" element={<TourOperatorLogin />} />
@@ -78,8 +83,9 @@ function App() {
         <Route path="/*" element={<NotFound />} />
       </Routes>
 
-      <Footer />
-    </BrowserRouter>
+    
+       {!hideFooterRoutes.includes(location.pathname) && <Footer />}
+       </>
   );
 }
 

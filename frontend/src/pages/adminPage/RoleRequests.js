@@ -1,33 +1,35 @@
 import React, { useState } from "react";
 import { acceptRoleRequestAPI, cancelRoleRequestAPI, getAllRoleRequestsAPI } from "../../services/adminServices";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import {AiOutlineClose} from "react-icons/ai";
 
 const RoleRequests = () => {
 
-  const[message,setMessage]=  useState({ text: "", type: "" });
+  const [notification, setNotification] = useState(null);
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000); 
+  };
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["requests"],
     queryFn: getAllRoleRequestsAPI,
   });
 
-  // const { mutateAsync, isLoading: isMutating } = useMutation({
-  //   mutationFn: acceptRoleRequestAPI,
-  //   mutationKey: ["acceptRoleRequest"],
-  // });
-  // const {cancelAsync}=useMutation({
-  //   mutationFn:cancelRoleRequestAPI,
-  //   mutationKey:["cancelRoleRequest"]
-  // })
-  // Accept and cancel role request mutations
   const acceptMutation = useMutation( {
     mutationFn: acceptRoleRequestAPI,
     mutationKey: ["acceptRoleRequest"],
     onSuccess: (response) => {
-      setMessage({ text: response?.message , type: "success" });
+      
+      showNotification( response?.message , "success" )
+
     },
     onError: (err) => {
-      setMessage({ text: err?.response?.data?.message , type: "error" });
+      showNotification(  err?.response?.data?.message, "error" )
+      
     },
   });
 
@@ -37,10 +39,10 @@ const RoleRequests = () => {
     mutationFn:cancelRoleRequestAPI,
     mutationKey:["cancelRoleRequest"],
     onSuccess: (response) => {
-      setMessage({ text: response?.message , type: "success" });
+      showNotification( response?.message , "success" )
     },
     onError: (err) => {
-      setMessage({ text: err?.response?.data?.error || "Failed to cancel request", type: "error" });
+      showNotification(  err?.response?.data?.message, "error" )
     },
   });
   const handleAccept = async (requestId) => {
@@ -64,7 +66,7 @@ const RoleRequests = () => {
   }
 
   const requests = data?.requests || [];
-{console.log('requsets',requests)}
+
   return (
     <div>
       <h2 className="p-5 text-xl font-semibold text-sky-500 mb-4">Role Requests</h2>
@@ -109,17 +111,15 @@ const RoleRequests = () => {
         </ul>
       )}
       <div className="bg-white shadow-md rounded-md p-6 lg:col-span-4">
-        {
-          message.text && (
-            <div
-            className={`p-4 mb-4 rounded-md text-white ${
-              message.type === "success" ? "bg-green-500" : "bg-red-500"
-            }`}
-          >
-            {message.text}
-          </div>
-          )
-        }
+      {notification && (
+        <div className={`fixed  right-4 z-50 bottom-4  px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
+          ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}>
+          <span>{notification.message}</span>
+          <button onClick={() => setNotification(null)} className="text-white ml-2">
+            <AiOutlineClose />
+          </button>
+        </div>
+      )}
       </div>
     </div>
   );

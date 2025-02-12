@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import { FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaMoneyBillWave, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
+import {AiOutlineClose} from "react-icons/ai";
 
 
 const TourDetail = () => {
@@ -16,7 +17,14 @@ const TourDetail = () => {
 
     const { tourId } = useParams();
     const queryClient = useQueryClient();
-    const [message, setMessage] = useState({ type: "", text: "" });
+    const [notification, setNotification] = useState(null);
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000); 
+  };
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ["searchTours", tourId],
@@ -28,27 +36,32 @@ const TourDetail = () => {
         mutationKey: ["bookings"],
         mutationFn: ({ tourId }) => createBookingAPI(tourId),
         onSuccess: () => {
-            setMessage({ type: "success", text: "Booking successful!" });
+            
+            showNotification(  "Booking successful!", "success"  )
             queryClient.invalidateQueries(["searchTours"]);
         },
         onError: (error) => {
-            setMessage({ type: "error", text: error?.response?.data?.error || "Booking failed" });
+            showNotification(  error?.response?.data?.error, "error"  )
         },
     });
 
     const handleBookingSubmit = async (tourId) => {
         if (!id) {
-            setMessage({ type: "error", text: "You must be logged in to book a tour." });
+        
+            showNotification(  "You must be logged in to book a tour", "error"  )
+           
             return;
         }
         if (decode?.role !== "user") {
-            setMessage({ type: "error", text: "Only users can book a tour." });
+            showNotification(  "Only users can book a tour", "error"  )
+          
             return;
         }
         try {
             await bookingMutation.mutateAsync({ tourId });
         } catch (error) {
-            setMessage({ type: "error", text: error?.response?.data?.error || "Booking failed" });
+            showNotification(  error?.response?.data?.error || "Booking failed", "error"  )
+          
         }
     };
 
@@ -108,15 +121,15 @@ const TourDetail = () => {
                 </div>
             </div>
 
-            {message.text && (
-                <div className={`fixed  right-4 z-10 bottom-4  p-4 rounded shadow-md flex items-center gap-2 ${message.type === "success" ? "bg-green-500" : "bg-red-500"} text-white`}>
-                    {message.type === "success" ? <FaCheckCircle className="text-xl" /> : <FaTimesCircle className="text-xl" />}
-                    <p>{message.text}</p>
-                    <button onClick={() => setMessage({ type: "", text: "" })} className="ml-4 bg-white text-black px-2 py-1 rounded">
-                        Close
-                    </button>
-                </div>
-            )}
+            {notification && (
+        <div className={`fixed  right-4 z-50 bottom-4  px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
+          ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}>
+          <span>{notification.message}</span>
+          <button onClick={() => setNotification(null)} className="text-white ml-2">
+            <AiOutlineClose />
+          </button>
+        </div>
+      )}
         </div>
     );
 };

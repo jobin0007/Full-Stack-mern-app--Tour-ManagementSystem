@@ -1,11 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { statusCustomTourAPI } from "../../services/customTourServices";
 import { MdCheckCircle, MdError, MdAccessTime } from "react-icons/md";
+import {AiOutlineClose} from "react-icons/ai";
 
 const CustomTourStatus = () => {
-  const { userId } = useParams(); // ✅ Get userId from URL params
+
+
+  const { userId } = useParams();
+  const [notification, setNotification] = useState(null);
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+  
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000); 
+  };
+
+
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["userBookings", userId],
     queryFn: () => statusCustomTourAPI(userId),
@@ -23,7 +37,7 @@ const CustomTourStatus = () => {
       </div>
     );
 
-  const bookings = data?.bookings || []; // ✅ Handle empty bookings
+  const bookings = data?.bookings || []; 
 
   if (bookings.length === 0)
     return (
@@ -34,7 +48,7 @@ const CustomTourStatus = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-md mt-6 mb-4">
-      {/* Status Message */}
+    
       <div className="flex items-center gap-2 mb-4">
         <MdCheckCircle className="text-green-500 text-2xl" />
         <h1 className="text-xl font-semibold">Custom Tour Status</h1>
@@ -86,6 +100,16 @@ const CustomTourStatus = () => {
           </div>
         </div>
       ))}
+
+{notification && (
+        <div className={`fixed  right-4 z-50 bottom-4  px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
+          ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}>
+          <span>{notification.message}</span>
+          <button onClick={() => setNotification(null)} className="text-white ml-2">
+            <AiOutlineClose />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
