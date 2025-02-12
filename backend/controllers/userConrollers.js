@@ -3,8 +3,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Users = require("../model/userSchema");
 const Bookings = require("../model/bookingsSchema");
-const TourOperator = require("../model/tourOperatorsSchema");
-const Admin = require("../model/adminSchema");
 const RoleChangeRequest = require("../model/roleChangeRequestingSchema");
 
 require("dotenv").config();
@@ -87,15 +85,23 @@ const userControllers = {
     
     });
   }),
-  logout: asynHandler(async (req, res) => {
+  logout : asynHandler(async (req, res) => {
+   
+        res.clearCookie("UserData", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", 
+            sameSite: "None",
+        });
+
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "None",
+        });
+
+        return res.json({ message: "Logged out successfully" });
   
-    res.clearCookie("userData", { httpOnly: true, sameSite: "none", secure: false });
-    res.clearCookie("token", { httpOnly: true, sameSite: "none", secure: false });
-    
-    res.json({
-      message: "Logged out successfully",
-    });
-  }),
+}),
   getOneUser: asynHandler(async (req, res) => {
     const id = req.user;
     if (!id) {
@@ -177,7 +183,7 @@ const userControllers = {
 
     const newRequest = new RoleChangeRequest({
       userId,
-      status: "pending", // Set the initial status as 'new_request'
+      status: "pending", 
     });
 
     await newRequest.save();

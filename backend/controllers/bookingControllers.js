@@ -13,20 +13,17 @@ createBooking : asyncHandler(async (req, res) => {
       return res.status(401).json({ error: "Authentication failed" });
     }
   
-    // Find the tour
     const foundTour = await Tour.findById(foundTourId);
     if (!foundTour) {
       return res.status(404).json({ error: "No Tours Available Now" });
     }
   
-    // Check tour booking status
     if (foundTour.bookingStatus === "booked" || foundTour.status !== "active") {
       return res
         .status(400)
         .json({ error: "Tour Already Booked or Not Active Now" });
     }
   
-    // Check if user already has a pending booking
     const existingTourRequest = await Bookings.findOne({ userId });
     if (existingTourRequest) {
       return res.status(400).json({
@@ -35,13 +32,11 @@ createBooking : asyncHandler(async (req, res) => {
       });
     }
   
-    // Get user details
     const userDetail = await Users.findById(userId);
     if (!userDetail) {
       return res.status(404).json({ error: "User not found" });
     }
   
-    // Create booking
     const createBooking = await Bookings.create({
       tourId: foundTourId,
       tourOperatorId: foundTour.tourOperatorId,
@@ -55,7 +50,6 @@ createBooking : asyncHandler(async (req, res) => {
       return res.status(500).json({ error: "Tour Booking Failed" });
     }
   
-    // Update tour status only after booking creation is successful
     await Tour.findByIdAndUpdate(foundTourId, {
       bookingStatus: "booked",
       status: "inactive",
@@ -67,80 +61,21 @@ createBooking : asyncHandler(async (req, res) => {
     });
   }),
 
-  // createBooking: asyncHandler(async (req, res) => {
-  //   const { foundTourId } = req.params;
-  //   const id = req.user
-    
-  //   if (!id) {
-  //     throw new Error("Authentication failed");
-  //   }
-   
-
-  //   const foundTour = await Tour.findOne({ _id: foundTourId });
-
-  //   if (!foundTour) {
-  //     throw new Error("No Tours Available Now");
-  //   }
-
-  //   const foundTourOperatorId = foundTour.tourOperatorId;
-
-  //   const foundPrice = foundTour.price;
-
-  //   if (
-  //     foundTour.bookingStatus !== "not-booked" &&
-  //     foundTour.status !== "active"
-  //   ) {
-  //     throw new Error("Tour Already Booked .Otherwise It Is Not Active Now");
-  //   }
-  //   const existingTourRequest = await Bookings.findOne({ userId: id });
-
-  //   if (existingTourRequest) {
-  //     throw new Error(
-  //       "You Have Already A Pending Tour Request. Please Try After Cancel It"
-  //     );
-  //   }
-
-  //   const userDetail = await Users.findById(id);
-  //   const createBooking = await Bookings.create({
-  //     tourId: foundTourId,
-  //     tourOperatorId: foundTourOperatorId,
-  //     userId: id,
-  //     userName: userDetail.name,
-  //     userMobileNumber: userDetail.mobile_number,
-  //     total_price: foundPrice,
-  //   });
-
-  //   await Tour.findByIdAndUpdate(foundTourId, { bookingStatus: "booked" });
-  //   await Tour.findByIdAndUpdate(foundTourId, { status: "inactive" });
-  //   if (!createBooking) {
-  //     throw new Error(" Tour not Booked");
-  //   }
-
-  //   res.json({
-  //     message: "Tour Booked ",
-  //     createBooking,
-  //   });
-  // }),
+ 
   getAllBooking: asyncHandler(async (req, res) => {
-    const tourOperatorId = req.tourOperator; // Extract tourOperatorId from request
-
-    // Validate that the tourOperatorId exists
+    const tourOperatorId = req.tourOperator; 
     if (!tourOperatorId) {
       return res.status(400).json({ error: "Tour Operator ID is missing." });
     }
 
-    // Query the database for bookings matching the tourOperatorId and pending status
     const allBookings = await Bookings.find({
       tourOperatorId,
-      booking_status: "pending", // Match pending booking status
-    }).populate("userId", "name mobile_number email"); // Populate user details
-
-    // Check if any bookings are found
+      booking_status: "pending", 
+    }).populate("userId", "name mobile_number email"); 
     if (!allBookings || allBookings.length === 0) {
       return res.status(404).json({ error: "No bookings found." });
     }
 
-    // Respond with the retrieved bookings
     res.status(200).json({
       message: "All bookings retrieved successfully.",
       bookings: allBookings,
@@ -171,7 +106,7 @@ createBooking : asyncHandler(async (req, res) => {
         (booking) => booking.booking_status === "accepted"
       );
   
-      if (acceptedBookings.length > 0) {
+      if (acceptedBookings) {
         return res.json({
           message:
             "Your booking has been accepted by the tour operator. You need to pay some money for confirmation.",
@@ -183,14 +118,13 @@ createBooking : asyncHandler(async (req, res) => {
         (booking) => booking.booking_status === "rejected"
       );
   
-      if (rejectedBookings.length > 0) {
+      if (rejectedBookings) {
         return res.json({
           message: " Your bookings have been rejected",
           bookings: rejectedBookings,
         });
       }
   
-      // Handle pending bookings (default case)
       return res.json({
         message: "Your bookings are currently pending",
         bookings: foundBookings,
@@ -239,7 +173,6 @@ createBooking : asyncHandler(async (req, res) => {
       },
       { new: true }
     );
-    // await Bookings.findByIdAndDelete(bookingId)
     if (!acceptBooking) {
       throw new Error("accepting Booking failed");
     }
@@ -265,7 +198,6 @@ createBooking : asyncHandler(async (req, res) => {
       },
       { new: true }
     );
-    // await Bookings.findByIdAndDelete(bookingId)
     if (!rejectBooking) {
       throw new Error("rejecting Booking failed");
     }
@@ -302,7 +234,7 @@ viewAcceptedTours :asyncHandler(async(req,res)=>{
 
   const allAcceptedBookings = await Bookings.find({
     tourOperatorId,
-    booking_status: "accepted", // Match pending booking status
+    booking_status: "accepted",
   }).populate("userId", "name mobile_number email");
 if(!allAcceptedBookings){
   throw new Error("No More Accepted Tours");

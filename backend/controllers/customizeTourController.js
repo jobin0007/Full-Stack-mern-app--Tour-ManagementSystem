@@ -95,5 +95,60 @@ const customizedTourControllers = {
     }
 
     ),
+    getStatusCustomizedTour: asyncHandler(async (req, res) => {
+    try {
+      const user = req.user;
+      const { userId } = req.params;
+  
+      if (!user) {
+        return res.status(401).json({ error: "Authentication Failed" });
+      }
+  
+      if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+      }
+  
+      const foundBookings = await CustomizedTours.find({ userId })
+        .populate("tourId", "title")
+        .populate("tourOperatorId", "name");
+  
+      if (!foundBookings || foundBookings.length === 0) {
+        return res.status(404).json({ message: "No bookings found for this user", bookings: [] });
+      }
+   
+      const acceptedBookings = foundBookings.filter(
+        (booking) => booking.status === "accepted"
+      );
+  
+      if (acceptedBookings) {
+        return res.json({
+          message:
+            "Your Customized Tour accepted.Operator Will contact you Within 1 Week",
+          bookings: acceptedBookings,
+        });
+      }
+  
+      const rejectedBookings = foundBookings.filter(
+        (booking) => booking.booking_status === "declined"
+      );
+  
+      if (rejectedBookings) {
+        return res.json({
+          message: " Your Custom Tour has been Declined",
+          bookings: rejectedBookings,
+        });
+      }
+  
+      return res.json({
+        message: "Your bookings are currently pending",
+        bookings: foundBookings,
+      });
+  
+    } catch (error) {
+      console.error("Error fetching user bookings:", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  }),
+
    }
 module.exports = customizedTourControllers

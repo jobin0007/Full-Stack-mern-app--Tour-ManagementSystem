@@ -32,10 +32,11 @@ import Tours from "../tours";
 import Search from "../../components/Search";
 import Header from '../../components/Header';
 import TourDetail from "../tours/TourDetail";
+import useLogout from "../../hooks/useLogout";
 
 
 const UserDashboard = () => {
-  const navigate = useNavigate()
+  const logoutMutation = useLogout()
   const { id: userId } = useParams();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -48,16 +49,10 @@ const UserDashboard = () => {
     setFilters(filterData);
   };
 
-  const {logout}= useMutation({
-    mutationKey:['logout'],
-    mutationFn:userLogOutAPI,
-    onSuccess:()=>{
 
-    }
-  })
- const handleLogOut =()=>{
-    logout()
-  }
+ 
+
+
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["user", userId],
@@ -117,8 +112,8 @@ const UserDashboard = () => {
           <AiOutlineHome className="text-gray-700  xs:text-xs  sm:text-xs lg:text-lg" />
           <span className=" xs:text-xs  sm:text-xs lg:text-lg ">Home</span>
           <button className="flex items-center gap-2 text-red-600 hover:text-red-800"
-          onClick={handleLogOut}
-          >
+            onClick={() => logoutMutation.mutate()} 
+            >
             <AiOutlineLogout className="text-lg" /> Logout
           </button>
           <div className="flex items-center gap-2">
@@ -162,6 +157,11 @@ const UserDashboard = () => {
               
             >
               <MdCreateNewFolder /> Customize Your Tours
+            </Link>
+            <Link
+            to={`/user/${userFound?._id}/view-status-custom`}
+            className="flex items-center gap-2 text-sm hover:text-indigo-600 cursor-pointer transition duration-200">
+              <FaBook />  Status of Custom Tour
             </Link>
 {/* 
             {hasBookings && (

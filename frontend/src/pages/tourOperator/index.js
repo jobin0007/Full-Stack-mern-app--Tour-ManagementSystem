@@ -13,7 +13,7 @@ import {
 import { IoShieldCheckmarkOutline } from "react-icons/io5";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getAllCustomToursAPI } from "../../services/customTourServices";
+import { acceptCustomTourAPI, getAllCustomToursAPI, rejectCustomTourAPI } from "../../services/customTourServices";
 import { getTourOperatorAPI } from "../../services/tourOperatorServices";
 import { PiBuildingOfficeBold } from "react-icons/pi";
 import { CiMobile3 } from "react-icons/ci";
@@ -25,9 +25,13 @@ import {
 
 const TourOperatorDashboard = () => {
   const [showSidebar, setShowSidebar] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [totalPrice, setTotalPrice] = useState("");
+  const [notification, setNotification] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  
+  const [message, setMessage] = useState(""); 
 
   const navigate = useNavigate();
 
@@ -35,6 +39,7 @@ const TourOperatorDashboard = () => {
     queryKey: ["customTourRequests"],
     queryFn: getAllCustomToursAPI,
   });
+ 
   const { tourOperatorId } = useParams();
   const { data: profile } = useQuery({
     queryKey: ["operatorProfile", tourOperatorId],
@@ -65,20 +70,53 @@ const TourOperatorDashboard = () => {
   });
 
   const booking = bookingsData?.bookings;
-  // const bookings = bookingsData?.bookings
   console.log(bookingsData);
   const tourOperator = profile?.findPerson;
   const requests = data?.foundTours || [];
+ 
+  
+  const { mutateAsync: rejectCustomTour } = useMutation({
+    mutationKey: ["rejectCustomTour"],
+    mutationFn: rejectCustomTourAPI, 
+  });
 
-  const handleAccept = (request) => {
-    setSelectedRequest(request);
-    setShowPopup(true);
+    const showNotification = (message, type) => {
+    setNotification({ message, type });
+
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000); 
   };
 
-  const handleReject = (id) => {
-    console.log(`Rejected Request ID: ${id}`);
+  const handleAccept = async () => {
+    try {
+      if (!selectedRequest) {
+        showNotification(" No tour selected!", "error");
+        return;
+      }
+      if (!totalPrice) {
+    showNotification(" Enter total price!", "error");
+        return;
+      }
+
+      await acceptCustomTourAPI(selectedRequest, totalPrice);
+
+      showNotification(" Tour accepted successfully!", "success");
+      setShowModal(false);
+      setTotalPrice("");
+    } catch (error) {
+      console.error("API Error:", error);
+      showNotification(" Failed to accept the tour.", "error");
+    }
   };
 
+
+  const handleReject = async (foundTourId) => {
+
+      await rejectCustomTour(foundTourId);
+      console.log("Tour rejected successfully");
+  
+  };
   const handlePopupSubmit = () => {
     console.log(
       `Accepted Request ID: ${selectedRequest?._id}, Total Price: ${totalPrice}`
@@ -216,12 +254,15 @@ const TourOperatorDashboard = () => {
                       </p>
                     </div>
                     <div className="flex space-x-4">
-                      <button
-                        onClick={() => handleAccept(request)}
-                        className="bg-green-500 text-white px-4 py-2 text-sm rounded-md hover:bg-green-600"
-                      >
-                        Accept
-                      </button>
+                    <button
+      onClick={() => {
+        setSelectedRequest(request._id);
+        setShowModal(true);
+      }}
+      className="bg-green-500 text-white px-4 py-2 text-sm rounded-md hover:bg-green-600"
+    >
+      Accept
+    </button>
                       <button
                         onClick={() => handleReject(request._id)}
                         className="bg-red-500 text-white px-4 py-2 text-sm rounded-md hover:bg-red-600"
@@ -229,6 +270,34 @@ const TourOperatorDashboard = () => {
                         Reject
                       </button>
                     </div>
+                    {showModal && (
+      <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+        <div className="bg-white p-6 rounded-md w-96">
+          <h2 className="text-lg font-medium mb-4">Enter Total Price</h2>
+          <input
+            type="number"
+            value={totalPrice}
+            onChange={(e) => setTotalPrice(e.target.value)}
+            placeholder="Enter price"
+            className="w-full p-2 border rounded-md mb-4"
+          />
+          <div className="flex justify-end space-x-4">
+            <button
+              onClick={() => setShowModal(false)}
+              className="bg-gray-500 text-white px-4 py-2 text-sm rounded-md"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleAccept}
+              className="bg-green-500 text-white px-4 py-2 text-sm rounded-md"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
                   </div>
                 ))
               ) : (
@@ -310,8 +379,18 @@ const TourOperatorDashboard = () => {
           </section>
         </div>
       </main>
+      {notification && (
+        <div className={`fixed bottom-4 right-4 px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
+          ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}>
+          <span>{notification.message}</span>
+          <button onClick={() => setNotification(null)} className="text-white ml-2">
+            <AiOutlineClose />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
 
 export default TourOperatorDashboard;
+

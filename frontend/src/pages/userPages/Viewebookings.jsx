@@ -1,11 +1,25 @@
-
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { viewUserBookingsAPI } from "../../services/userServices";
 import { deleteBookingAPI } from "../../services/bookingServices";
-import { createOrderAPI, verifyPaymentAPI } from "../../services/paymentServices";
-import { FaCalendarAlt, FaMoneyBillWave, FaBook, FaUser, FaInfoCircle, FaTrash, FaCreditCard } from "react-icons/fa";
+import { CheckCircle, XCircle, AlertTriangle, Clock } from "lucide-react";
+
+import {
+  createOrderAPI,
+  verifyPaymentAPI,
+} from "../../services/paymentServices";
+import {
+  FaCalendarAlt,
+  FaMoneyBillWave,
+  FaBook,
+  FaClock,
+  FaUser,
+  FaInfoCircle,
+  FaTrash,
+  FaCreditCard,
+} from "react-icons/fa";
+import { getStatusIcon } from "../../hooks/status";
 
 const ViewBookings = () => {
   const { userId } = useParams();
@@ -15,8 +29,8 @@ const ViewBookings = () => {
     queryKey: ["userBookings", userId],
     queryFn: () => viewUserBookingsAPI(userId),
   });
+  console.log(data);
 
- 
   const deleteBookingMutation = useMutation({
     mutationFn: deleteBookingAPI,
     onSuccess: () => {
@@ -29,50 +43,41 @@ const ViewBookings = () => {
   });
 
   const initiatePayment = async (bookingId) => {
-   
-  
-      const orderData = await createOrderAPI(bookingId); 
-      console.log("orderData",orderData);
-      
-     
-      const { order_id, amount, currency } = orderData; 
+    const orderData = await createOrderAPI(bookingId);
+    console.log("orderData", orderData);
 
-     
-      const options = {
-        key: process.env.RAZORPAY_KEY_ID, 
-        amount: amount,
-        currency: currency,
-        name: "Tour Management",
-        description: "Payment for your tour booking",
-        order_id: order_id,
-        handler: async (response) => {
-          
-          const paymentDetails = {
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-            bookingId,
-          };
+    const { order_id, amount, currency } = orderData;
 
-       
-            const verifyResponse = await verifyPaymentAPI(paymentDetails);
-            if (verifyResponse.success) {
-              alert("Payment successful!");
-              queryClient.invalidateQueries(["userBookings", userId]); 
-            } else {
-              alert("Payment verification failed.");
-            }
-         
-        },
-        theme: {
-          color: "#3399cc", 
-        },
-      };
+    const options = {
+      key: process.env.RAZORPAY_KEY_ID,
+      amount: amount,
+      currency: currency,
+      name: "Tour Management",
+      description: "Payment for your tour booking",
+      order_id: order_id,
+      handler: async (response) => {
+        const paymentDetails = {
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature,
+          bookingId,
+        };
 
+        const verifyResponse = await verifyPaymentAPI(paymentDetails);
+        if (verifyResponse.success) {
+          alert("Payment successful!");
+          queryClient.invalidateQueries(["userBookings", userId]);
+        } else {
+          alert("Payment verification failed.");
+        }
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
 
-      const razorpay = new window.Razorpay(options);
-      razorpay.open();
-
+    const razorpay = new window.Razorpay(options);
+    razorpay.open();
   };
 
   const bookings = data?.bookings || [];
@@ -80,30 +85,64 @@ const ViewBookings = () => {
 
   return (
     <div className="container mx-auto max-w-2xl p-4">
-      <h2 className="text-2xl md:text-3xl font-semibold text-center mb-4">Your Bookings</h2>
+      <h2 className="text-2xl md:text-3xl font-semibold text-center mb-4">
+        Your Bookings
+      </h2>
 
       {isLoading && <p>Loading bookings...</p>}
-      {isError && <p className="text-center text-red-500">Failed to load bookings.</p>}
+      {isError && (
+        <p className="text-center text-red-500">Failed to load bookings.</p>
+      )}
 
       {!isLoading && bookings.length === 0 ? (
         <p className="text-center text-gray-500">No bookings found.</p>
       ) : (
         <div className="space-y-4">
           {bookings.map((booking) => (
-            <div key={booking._id} className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div
+              key={booking._id}
+              className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+            >
               <div className="flex flex-col gap-3">
-                <p className="flex items-center gap-2"><FaBook className="text-green-500" /><strong>Tour:</strong> {booking.tourId?.title || "N/A"}</p>
-                <p className="flex items-center gap-2"><FaUser className="text-blue-500" /><strong>Operator:</strong> {booking.tourOperatorId?.name || "N/A"}</p>
-                <p className="flex items-center gap-2"><FaMoneyBillWave className="text-yellow-500" /><strong>Total Price:</strong> ${booking.total_price}</p>
-                <p className="flex items-center gap-2"><FaInfoCircle className="text-red-500" /><strong>Payment Status:</strong> {booking.payment_status}</p>
-                <p className="flex items-center gap-2"><FaCalendarAlt className="text-teal-500" /><strong>Booking Date:</strong> {new Date(booking.booking_date).toLocaleString()}</p>
+                <p className="flex items-center gap-2">
+                  <FaBook className="text-green-500" />
+                  <strong>Tour:</strong> {booking.tourId?.title || "N/A"}
+                </p>
+                <p className="flex items-center gap-2">
+                  <FaUser className="text-blue-500" />
+                  <strong>Operator:</strong>{" "}
+                  {booking.tourOperatorId?.name || "N/A"}
+                </p>
+                <p className="flex items-center gap-2">
+                  <FaMoneyBillWave className="text-yellow-500" />
+                  <strong>Total Price:</strong> ${booking.total_price}
+                </p>
+                <p className="flex items-center gap-2">
+                  <AlertTriangle className="text-yellow-500" />
+                  <strong>Booking Status:</strong>{" "}
+                  {getStatusIcon(booking.booking_status)}
+                  <span className="capitalize">{booking.booking_status}</span>
+                </p>
+                <p className="flex items-center gap-2">
+                  <FaInfoCircle className="text-red-500" />
+                  <strong>Payment Status:</strong> {booking.payment_status}
+                </p>
+                <p className="flex items-center gap-2">
+                  <FaCalendarAlt className="text-teal-500" />
+                  <strong>Booking Date:</strong>{" "}
+                  {new Date(booking.booking_date).toLocaleString()}
+                </p>
+                <p className="flex mx-auto font-bold gap-2 ">
+               {message}
+                </p>
                 <div className="flex justify-between mt-3">
                   <button
                     onClick={() => deleteBookingMutation.mutate(booking._id)}
                     className="flex items-center gap-2 bg-red-500 text-white px-3 py-1.5 rounded-md hover:bg-red-600 transition duration-300 text-sm"
                     disabled={deleteBookingMutation.isLoading}
                   >
-                    <FaTrash /> {deleteBookingMutation.isLoading ? "Deleting..." : "Delete"}
+                    <FaTrash />{" "}
+                    {deleteBookingMutation.isLoading ? "Deleting..." : "Delete"}
                   </button>
                   {booking.payment_status !== "paid" && (
                     <button

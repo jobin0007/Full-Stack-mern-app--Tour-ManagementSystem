@@ -21,6 +21,7 @@ import GetAllUsers from "./pages/adminPage/GetAllUsers";
 import GetAllTourOperators from "./pages/adminPage/GetAllTourOperators";
 import Tours from "./pages/tours";
 import TourDetail from "./pages/tours/TourDetail";
+import CustomTourStatus from "./pages/userPages/CustomTourStatus";
 
 function App() {
   const user = useSelector((state) => state.user);
@@ -46,6 +47,7 @@ function App() {
 
             <Route path="/user/:id/create-custom-tour" element={<CreateCustomTour />} />
             <Route path="/user/:userId/view-Bookings" element={<Viewebookings />} />
+            <Route path="/user/:userId/view-status-custom" element={<CustomTourStatus />} />
           </>
         )}
 

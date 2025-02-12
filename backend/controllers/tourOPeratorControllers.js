@@ -3,6 +3,9 @@ const TourOperator = require('../model/tourOperatorsSchema')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const Tour = require('../model/tourSchema')
+const CustomizedTours = require('../model/customizedToursSchema')
+const Users = require('../model/userSchema')
+const Bookings = require('../model/bookingsSchema')
 
 
 
@@ -48,10 +51,6 @@ const tourOperatorControllers = {
             message: "Tour Operator Registered Successfully ",
             token
         })
-
-
-
-
     }
 
     ),
@@ -88,12 +87,6 @@ const tourOperatorControllers = {
 
 
     }),
-
-
-
-
-
-
     getProfileTourOperator: asyncHandler(async (req, res) => {
         const { id } = req.params
         if (!id) {
@@ -107,8 +100,6 @@ const tourOperatorControllers = {
             message: "Tour Operator Found Successfully",
             findPerson
         })
-
-
     }),
     updateMobileNumber: asyncHandler(async (req, res) => {
         const { email } = req.body
@@ -148,57 +139,65 @@ const tourOperatorControllers = {
         })
 
     }), 
-    acceptCustomTour: asyncHandler(async (req, res) => {
-        const foundTourOperatorId = req.tourOperator
-        const { foundTourId } = req.params
-        const { total_price } = req.body
-        const { action } = req.body
+     acceptCustomTour : asyncHandler(async (req, res) => {
+        const foundTourOperatorId = req.tourOperator;
+        const { foundTourId } = req.params;
+        const { total_price } = req.body;
+    
+        
         if (!foundTourOperatorId) {
-            throw new Error("Tour Operator Not Found")
+            throw new Error("Tour Operator Not Found");
         }
-        const checkingStatus = await CustomizedTours.findById(foundTourId, { status: 'pending' })
-        if (!total_price || !action) {
-            throw new Error("Give price and approval")
+    
+        
+        if (!total_price) {
+            throw new Error("Please provide a price to approve the tour");
         }
-        if (!checkingStatus) {
-            throw new Error("This Request is already Handled or Invalid Tour")
+    
+       
+        const foundTour = await CustomizedTours.findOne({ _id: foundTourId, status: 'pending' });
+    
+        if (!foundTour) {
+            throw new Error("This Request is already Handled or Invalid Tour");
         }
-        if (action !== 'accept') {
-            throw new Error("Please Give Correct Action")
-
-        }
-        const found = await CustomizedTours.findById(foundTourId)
-        const foundUserId = found.userId
-        const detail = await Users.findById(foundUserId)
-        // const existingAcceptedRequest = await Bookings.findOne({ tourId: foundTourId })
-        // if (existingAcceptedRequest) {
-        //     throw new Error("This One Already Processed")
-        // }
-        const booked = await Bookings.create({
-            tourId: foundTourId,
-            userId: detail.id,
-            tourOperatorId: foundTourOperatorId,
-            userName: detail.name,
-            userMobileNUmber: detail.mobile_number,
-            title: found.title,
-            location:found.location,
-            description: found.description,
-            total_price,
-            start_date: found.start_date,
-            end_date: found.end_date,
-            participants: found.participants,
-        })
-        await Bookings.findByIdAndUpdate(foundTourId,{booking_status:'accepted'}, { new: true })
-        await CustomizedTours.findByIdAndUpdate(foundTourId, { status: 'accepted' }, { new: true })
-     
-
+    
+      
+        const updatedTour = await CustomizedTours.findByIdAndUpdate(
+            foundTourId,
+            { status: 'accepted', budget: total_price },
+            { new: true } 
+        );
+    
         res.json({
-            message: "Tour accepted Successfully",
-            booked
-        })
+            message: "Custom Tour accepted successfully",
+            updatedTour,
+        });
     })
-
-   
-
+    ,
+    rejectCustomTour:asyncHandler(async (req, res) => {
+        const tourOperatorId = req.tourOperator;
+        const {  foundTourId } = req.params;
+    
+        if (!tourOperatorId) {
+          throw new Error("Authentication Failed");
+        }
+        if (!foundTourId) {
+          throw new Error("BookId required  ");
+        }
+        const rejectBooking = await CustomizedTours.findByIdAndUpdate(
+            foundTourId,
+          {
+           status: "declined",
+          },
+          { new: true }
+        );
+        if (!rejectBooking) {
+          throw new Error("rejecting Booking failed");
+        }
+        res.json({
+          message: "Rejecting Booking successfull",
+          rejectBooking,
+        });
+      })
 }
 module.exports = tourOperatorControllers
