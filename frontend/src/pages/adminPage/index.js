@@ -45,7 +45,9 @@ function AdminDashBoard() {
         </button>
         <div className="flex items-center gap-4">
           <AiOutlineHome className="text-lg" />
-          <span>Home</span>
+          <Link to={'/'}>      
+              <span>Home</span>
+           </Link>
           <button className="flex items-center gap-2 text-red-600 hover:text-red-800"
           onClick={() => logoutMutation.mutate()} 
           >

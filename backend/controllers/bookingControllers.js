@@ -98,35 +98,39 @@ createBooking : asyncHandler(async (req, res) => {
         .populate("tourId", "title")
         .populate("tourOperatorId", "name");
   
-      if (!foundBookings || foundBookings.length === 0) {
+      if (!foundBookings.length) {
         return res.status(404).json({ message: "No bookings found for this user", bookings: [] });
       }
   
-      const acceptedBookings = foundBookings.filter(
-        (booking) => booking.booking_status === "accepted"
-      );
+      const acceptedBookings = foundBookings.filter((booking) => booking.booking_status === "accepted");
+      const rejectedBookings = foundBookings.filter((booking) => booking.booking_status === "rejected");
+      const pendingBookings = foundBookings.filter((booking) => booking.booking_status === "pending");
   
-      if (acceptedBookings) {
+      if (acceptedBookings.length > 0) {
         return res.json({
           message:
-            "Your booking has been accepted by the tour operator. You need to pay some money for confirmation.",
+            "Your booking has been accepted by the tour operator. Please proceed with the payment for confirmation.",
           bookings: acceptedBookings,
         });
       }
   
-      const rejectedBookings = foundBookings.filter(
-        (booking) => booking.booking_status === "rejected"
-      );
-  
-      if (rejectedBookings) {
+      if (rejectedBookings.length > 0) {
         return res.json({
-          message: " Your bookings have been rejected",
+          message: "Your bookings have been rejected",
           bookings: rejectedBookings,
         });
       }
   
+      if (pendingBookings.length > 0) {
+        return res.json({
+          message: "Your bookings are currently pending",
+          bookings: pendingBookings,
+        });
+      }
+  
+      // Fallback response (should never reach here unless statuses are misconfigured)
       return res.json({
-        message: "Your bookings are currently pending",
+        message: "No valid booking statuses found",
         bookings: foundBookings,
       });
   

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { viewUserBookingsAPI } from "../../services/userServices";
 import { deleteBookingAPI } from "../../services/bookingServices";
 import { CheckCircle, XCircle, AlertTriangle, Clock } from "lucide-react";
 
@@ -21,6 +20,7 @@ import {
 } from "react-icons/fa";
 import { getStatusIcon } from "../../hooks/status";
 import {AiOutlineClose} from "react-icons/ai";
+import { viewUserBookingsAPI } from "../../services/userServices";
 
 const ViewBookings = () => {
   const { userId } = useParams();
@@ -89,8 +89,8 @@ const ViewBookings = () => {
     const razorpay = new window.Razorpay(options);
     razorpay.open();
   };
-
-  const bookings = data?.bookings || [];
+   console.log("book",data)
+  const bookings = data?.bookings|| [];
   const message = data?.message || "";
 
   return (

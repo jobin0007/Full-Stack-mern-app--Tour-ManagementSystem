@@ -22,6 +22,8 @@ import GetAllTourOperators from "./pages/adminPage/GetAllTourOperators";
 import Tours from "./pages/tours";
 import TourDetail from "./pages/tours/TourDetail";
 import CustomTourStatus from "./pages/userPages/CustomTourStatus";
+import Header from "./components/Header";
+import About from "./components/About";
 
 function App() {
   const location = useLocation();
@@ -30,21 +32,31 @@ function App() {
   const admin = useSelector((state) => state.admin);
   const tourOperator = useSelector((state) => state.tourOperator);
 
-  // Hide footer on these routes
+ 
   const hideFooterRoutes = ["/user/login"]
+  const showHeaderRoutes = ["/user/register", "/tours","/about", "/admin/login","/tour-operator/login",
+   "/tour/:tourId","/user/:userId/view-Bookings","/user/:id/create-custom-tour",
+   "/user/:userId/view-status-custom","/admin/:id/role-requset","/admin/:id/get-All-users",
+   "/admin/:id/get-All-tour-operators","/tour-operator/:tourOperatorId/view-accepted-tours",
+   "/create-tour"
 
+  ];
+  const shouldShowHeader = showHeaderRoutes.some((route) => location.pathname.startsWith(route))|| location.pathname.startsWith("/tour/","/user/","/admin/" ,"/tour-operator/");
   return (
     <>
+       {shouldShowHeader && <Header />}
       <Routes>
     
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+
         <Route path="/user/login" element={<UserLogin isOpen={true} />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/user/register" element={<Register />} />
         <Route path="/tour-operator/login" element={<TourOperatorLogin />} />
         <Route path="/tours" element={<Tours/>}/>
          <Route path="/tour/:tourId" element={<TourDetail/>}/>
-         <Route path="tour/:tourId" element={<TourDetail/>}/>
+      
 
         {user && (
           <>

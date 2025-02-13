@@ -142,7 +142,10 @@ const TourOperatorDashboard = () => {
         </button>
         <div className="flex col-span-3 justify-end gap-2">
           <AiOutlineHome className="text-gray-700  xs:text-xs  sm:text-xs lg:text-lg" />
+          <Link to={'/'}>
           <span className=" xs:text-xs  sm:text-xs lg:text-lg ">Home</span>
+
+          </Link>
           <button className="flex items-center gap-2 text-red-600 hover:text-red-800"
             onClick={() => logoutMutation.mutate()} 
             >

@@ -5,16 +5,16 @@ const cutomizedToursScehma = new mongoose.Schema({
           ref: 'Users',
           required: true
       },
-      tourId: {
-          type: Object,
-          ref: 'Tour',
-          required: true
-      },
-      tourOperatorId: {
-          type: Object,
-          ref: 'TourOperator',
-          required: true
-      },
+     //  tourId: {
+     //      type: Object,
+     //      ref: 'Tour',
+     //      required: true
+     //  },
+     //  tourOperatorId: {
+     //      type: Object,
+     //      ref: 'TourOperator',
+     //      required: true
+     //  },
      title: {
           type: String,
           required: true

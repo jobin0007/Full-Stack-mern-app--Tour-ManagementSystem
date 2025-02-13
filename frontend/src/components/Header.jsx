@@ -12,6 +12,7 @@ import { GrSearch } from "react-icons/gr";
 import Search from "./Search";
 
 
+ 
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,10 +25,16 @@ const Header = () => {
     setIsMenuOpen(!isMenuOpen);
   };
   // Toggle dropdown visibility
+
+  const phoneNumber = "+918593826584";
+  const message = "Hello,I would like to chat with you.";
+  const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+    message
+  )}`;
   
   return (
-    <header className=" w-full h-fit  bg-white shadow-md">
-    <div className=" container  mx-auto px-4 py-5 flex justify-between items-center">
+    <header className=" w-full h-fit  bg-white ">
+    <div className=" container  mx-auto px-10 py-10 flex justify-between items-center">
       {/* Logo */}
       <Link
         to={''}
@@ -51,62 +58,12 @@ const Header = () => {
 
                  </div>
       {/* Navigation Menu for Desktop */}
-      <nav className="hidden md:flex items-center space-x-8 text-gray-700">
+      <nav className="hidden md:flex items-center space-x-20 font-montserrat font-bold text-gray-700">
   
       
      
-      {/* Main Button */}
-    
-      {/* Dropdown Menu */}
-      <div className="relative inline-block text-left">
-      {/* Logo and Question */}
-      <div className="flex items-center space-x-4">
-{/*       
-        <button
-          onClick={toggleDropdown}
-          className="inline-flex items-center px-4 py-2 text-sm font-medium text-white "
-        >
-          <img
-          src={register}
-          alt="Logo"
-         className="w-8 transition-transform duration-300 hover:scale-110"
-        />
-         
-   
-        </button> */}
-      </div>
-
-      {/* Dropdown Menu */}
-      {isOpen && (
-        <div
-          className="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white divide-y rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-transform duration-300 hover:scale-110"
-          role="menu"
-          aria-orientation="vertical"
-          aria-labelledby="menu-button"
-        >
-          
-          <div className="py-1">
-        <div className=" flex flex-row">
-        <span className="px-4 py-2 underline">New user ?</span>  
-          
-          <button
-            className="block  py-2 text-sm text-gray-700  "
-            role="menuitem"
-          >
-            <Link to={'/register'}>Sign In</Link>
-         
-          </button>
-        </div>
-            <button
-              className="block px-4 py-2 text-sm text-gray-700"
-              role="menuitem"
-            >
-            <Link to={'user/login'}> Login</Link>
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+      
+      
         
  
     
@@ -115,46 +72,43 @@ const Header = () => {
         <Link
           href="#"
           to={""}
-          className="relative group hover:text-blue-300 transition duration-300 transform hover:scale-105 "
+          className="relative group  hover:text-blue-300 transition duration-300 transform hover:scale-105 "
         >
-          <img src={home} className="w-8" alt="Home" />
+    
           {/* Hover text above the icon */}
-          <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition">
             Home
-          </span>
+     
         </Link>
         <Link
           href="#"
-          to={""}
+          to={"/tours"}
           className="relative group hover:text-blue-300 transition duration-300 transform hover:scale-105"
         >
-          <img src={services} className="w-8" alt="Home" />
-          {/* Hover text above the icon */}
-          <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition">
-            Services
-          </span>
+   
+         
+          
+Our Packages
+         
         </Link>
         <Link
           href="#"
           to={'about'}
           className="relative group hover:text-blue-300 transition duration-300 transform hover:scale-105"
         >
-          <img src={about} className="w-8" alt="Home" />
-          {/* Hover text above the icon */}
-          <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition">
+        
+       
             About
-          </span>
+         
         </Link>
         <Link
           href="#"
-          to={""}
+          to={whatsappLink}
           className="relative group hover:text-blue-300 transition duration-300 transform hover:scale-105"
         >
-          <img src={support} className="w-8" alt="Home" />
+     
           {/* Hover text above the icon */}
-          <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition">
             Contact
-          </span>
+        
         </Link>
        
       </nav>
@@ -162,7 +116,7 @@ const Header = () => {
       {/* Hamburger Menu for Mobile */}
       <button
         onClick={toggleMenu}
-        className="block md:hidden focus:outline-none hover:text-blue-400 transition duration-300 transform hover:scale-105"
+        className="block md:hidden font-montserrat font-bold focus:outline-none hover:text-blue-400 transition duration-300 transform hover:scale-105"
       >
         <svg
           className="w-6 h-6"
@@ -185,34 +139,51 @@ const Header = () => {
     {isMenuOpen && (
       <div className=" md:hidden text-sm">
         {/* Mobile Search Box */}
-        <div className="justify-items-center m-auto w-56">
-        <SearcBox />
-        </div>
     
-        <a
+    
+       
+        <Link
           href="#"
-          className="block px-4 py-2 hover:bg-blue-700 transition duration-300 transform hover:scale-105"
+          to={""}
+          className="block px-4 py-2 group  hover:text-blue-300 transition duration-300 transform hover:scale-105 "
         >
-          Home
-        </a>
-        <a
+    
+          {/* Hover text above the icon */}
+            Home
+     
+        </Link>
+        <Link
           href="#"
-          className="block px-4 py-2 hover:bg-blue-700 transition duration-300 transform hover:scale-105"
+          to={"/tours"}
+          className="block px-4 py-2 group hover:text-blue-300 transition duration-300 transform hover:scale-105"
         >
-          About
-        </a>
-        <a
+   
+         
+          
+Our Packages
+         
+        </Link>
+        <Link
           href="#"
-          className="block px-4 py-2 hover:bg-blue-700 transition duration-300 transform hover:scale-105"
+          to={'about'}
+          className="block px-4 py-2 group hover:text-blue-300 transition duration-300 transform hover:scale-105"
         >
-          Services
-        </a>
-        <a
+        
+       
+            About
+         
+        </Link>
+        <Link
           href="#"
-          className="block px-4 py-2 hover:bg-blue-700 transition duration-300 transform hover:scale-105"
+          to={whatsappLink}
+          className="block px-4 py-2 group hover:text-blue-300 transition duration-300 transform hover:scale-105"
         >
-          Contact
-        </a>
+     
+          {/* Hover text above the icon */}
+            Contact
+        
+        </Link>
+       
       </div>
     )}
       </header>
