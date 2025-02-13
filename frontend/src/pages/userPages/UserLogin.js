@@ -134,7 +134,7 @@ import React, { useState } from "react";
 import { FaEye, FaEyeSlash, FaEnvelope, FaLock } from "react-icons/fa";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-
+import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { jwtDecode } from "jwt-decode";
@@ -148,6 +148,7 @@ const UserLogin = ({ isOpen, onClose }) => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [notification, setNotification] = useState(null);
+    const navigate = useNavigate()
   const dispatch = useDispatch();
 
   const showNotification = (message, type) => {
@@ -169,6 +170,7 @@ const UserLogin = ({ isOpen, onClose }) => {
       dispatch(login({ user: decoded, token: data.token }));
       showNotification("Login Successful!", "success");
       setTimeout(onClose, 1000); 
+      navigate(`/user/${decoded?.userId}`);
     },
   });
   if (!isOpen) return null; 
@@ -205,23 +207,7 @@ const UserLogin = ({ isOpen, onClose }) => {
             </button>
 
        
-            <AnimatePresence>
-              {notification && (
-                <motion.div
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -20, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className={`fixed top-4 right-4 z-50 px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
-                    ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}
-                >
-                  <span>{notification.message}</span>
-                  <button onClick={() => setNotification(null)} className="text-white ml-2">
-                    <AiOutlineClose />
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+          
 
             <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-center text-gray-800 mb-6">
               Welcome Back
@@ -271,13 +257,33 @@ const UserLogin = ({ isOpen, onClose }) => {
 
             <p className="text-center text-gray-600 mt-5">
               Don’t have an account?{" "}
+              <Link to={'/user/register'}>
               <span className="text-blue-600 cursor-pointer hover:underline" onClick={onClose}>
                 Create New Account
               </span>
+              </Link>
             </p>
           </motion.div>
+
         </motion.div>
       )}
+        <AnimatePresence>
+              {notification && (
+                <motion.div
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className={`fixed  right-4 z-50 bottom-4  px-4 py-2 rounded-md text-white shadow-lg flex items-center space-x-2 
+                    ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}
+                >
+                  <span>{notification.message}</span>
+                  <button onClick={() => setNotification(null)} className="text-white ml-2">
+                    <AiOutlineClose />
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
     </AnimatePresence>
   );
 };

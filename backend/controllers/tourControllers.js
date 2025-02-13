@@ -67,17 +67,13 @@ const tourControllers={
             if (title) filter.title = { $regex: title,$options: "i"}; 
             if (price) filter.price = Number(price); 
     
-            
-    
-         
             const results = await Tour.find(filter).populate('tourOperatorId','name')
     
             
             if (!results || results.length === 0) {
                 throw new Error ("No matching tours found")
             }
-    
-          
+       
             res.json({  results });
        
     })

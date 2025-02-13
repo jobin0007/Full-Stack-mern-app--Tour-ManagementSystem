@@ -9,6 +9,7 @@ import {
   AiOutlineUser,
   AiOutlineDollarCircle,
   AiOutlineMenu,
+  AiOutlineLogout,
 } from "react-icons/ai";
 import { IoShieldCheckmarkOutline } from "react-icons/io5";
 
@@ -22,6 +23,7 @@ import {
   getUserBookingsAPI,
   rejectBookingAPI,
 } from "../../services/bookingServices";
+import useLogout from "../../hooks/useLogout";
 
 const TourOperatorDashboard = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -34,6 +36,7 @@ const TourOperatorDashboard = () => {
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
+  const logoutMutation = useLogout()
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["customTourRequests"],
@@ -71,7 +74,7 @@ const TourOperatorDashboard = () => {
 
   const booking = bookingsData?.bookings;
  
-  const tourOperator = profile?.findPerson;
+  const tourOperator = profile?.findPerson.name;
   const requests = data?.foundTours || [];
 
 
@@ -129,25 +132,28 @@ const TourOperatorDashboard = () => {
   if (isError) return <div>Error fetching tour requests!</div>;
 
   return (
-    <div className=" min-h-screen bg-gray-100">
-      <header className=" p-4  items-center justify-center">
+    <div className=" min-h-screen p-5 bg-gray-100">
+        <div className="grid grid-cols-2 sm:grid-cols-4 items-center  px-4 py-3 shadow-md">
         <button
           onClick={() => setShowSidebar(true)}
-          className="text-gray-700 text-2xl mr-4 "
+          className="text-gray-700 text-2xl"
         >
           <AiOutlineMenu />
         </button>
-        <div className="flex flex-col  items-center">
-          
-          <PiBuildingOfficeBold className="text-gray-700 text-4xl mb-2" />
-          <h1 className="text-xl lg:text-2xl font-semibold">
-            {tourOperator?.name}
-          </h1>
-          <p className="text-gray-600 text-sm lg:text-base">
-            {tourOperator?.role}
-          </p>
+        <div className="flex col-span-3 justify-end gap-2">
+          <AiOutlineHome className="text-gray-700  xs:text-xs  sm:text-xs lg:text-lg" />
+          <span className=" xs:text-xs  sm:text-xs lg:text-lg ">Home</span>
+          <button className="flex items-center gap-2 text-red-600 hover:text-red-800"
+            onClick={() => logoutMutation.mutate()} 
+            >
+            <AiOutlineLogout className="text-lg" /> Logout
+          </button>
+          <div className="flex items-center gap-2">
+            <AiOutlineUser className="text-gray-700  xs:text-xs  sm:text-xs lg:text-lg" />
+            <span className=" xs:text-xs  sm:text-xs lg:text-lg ">{tourOperator}</span>
+          </div>
         </div>
-      </header>
+      </div>
 
       {showSidebar && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex">
