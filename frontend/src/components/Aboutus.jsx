@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Aboutus = () => {
   return (
-    <div className="flex flex-col items-center w-full py-2  mt-3 mb-4 text-center">
+    <div className="flex flex-col items-center w-full py-2  mt-3 mb-4 text-center [word-spacing:6px] tracking-wide">
       <h1 className="text-4xl md:text-5xl font-bold mb-6 font-garamond">About Us</h1>
       <div className="space-y-4 p-8 font-montserrat w-11/12">
         <p className="text-lg md:text-xl">

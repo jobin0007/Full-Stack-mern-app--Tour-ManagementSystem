@@ -2,7 +2,7 @@ import React from 'react';
 
 const About = () => {
   return (
-    <div className="p-6 md:p-10 max-w-6xl mx-auto">
+    <div className="p-6 md:p-10 max-w-6xl mx-auto [word-spacing:6px] tracking-wide">
       <h1 className="text-4xl md:text-6xl font-bold mb-6 text-left font-luxurious">About Us</h1>
       <h2 className="text-2xl md:text-4xl font-semibold mb-4 text-left font-vollkorn">RêveWelt</h2>
 
